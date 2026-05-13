@@ -6,13 +6,13 @@ const cases = [
 ];
 ---
 <section id="cases" class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
-  <div class="text-xs uppercase tracking-widest text-muted mb-3">Кейсы</div>
+  <div class="text-xl md:text-2xl uppercase tracking-widest text-ink font-medium mb-4">Кейсы</div>
   <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
     Цифры, а не обещания.
   </h2>
   <div class="grid md:grid-cols-3 gap-3">
     {cases.map(c => (
-      <div class="bg-white rounded-2xl p-7 border border-line">
+      <div class="bg-paper rounded-lg p-7 border border-line">
         <div class="text-xs uppercase tracking-widest text-muted mb-4">{c.client}</div>
         <div class="text-5xl font-medium tracking-tight mb-1">{c.metric}</div>
         <div class="text-sm text-muted mb-5">{c.desc}</div>

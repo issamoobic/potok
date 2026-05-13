@@ -1,77 +1,182 @@
 ---
 ---
-<div id="ai-widget" class="fixed bottom-6 right-6 z-50">
-  <button id="ai-toggle" class="w-14 h-14 rounded-full bg-ink text-paper shadow-lg hover:scale-105 transition flex items-center justify-center text-2xl">
-    ✨
+<div id="ai-widget" class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50">
+  <button id="ai-toggle" class="w-20 h-20 rounded-full bg-ink text-paper shadow-2xl hover:scale-105 transition flex items-center justify-center text-2xl font-semibold border-2 border-paper">
+    KS
   </button>
 
-  <div id="ai-panel" class="hidden absolute bottom-20 right-0 w-[min(380px,calc(100vw-3rem))] bg-white border border-line rounded-2xl shadow-2xl flex flex-col" style="height: 520px;">
-    <div class="px-5 py-4 border-b border-line flex justify-between items-center">
+  <div id="ai-panel" class="hidden absolute bottom-24 right-0 w-[min(390px,calc(100vw-2.5rem))] bg-ink text-paper border-2 border-paper rounded-lg shadow-2xl overflow-hidden flex flex-col" style="max-height: calc(100vh - 8rem);">
+    <div class="px-5 py-4 border-b border-paper/35 flex justify-between items-start gap-4">
       <div>
-        <div class="font-medium">Помощник Поток</div>
-        <div class="text-xs text-muted">Отвечает мгновенно</div>
+        <div class="font-semibold leading-tight">Покажем, где ИИ сэкономит время</div>
+        <div class="text-xs opacity-75 mt-1">Подберём демо под ваш бизнес</div>
       </div>
-      <button id="ai-close" class="text-muted hover:text-ink text-xl">×</button>
+      <button id="ai-close" class="text-paper/75 hover:text-paper text-xl leading-none" aria-label="Закрыть">×</button>
     </div>
 
-    <div id="ai-messages" class="flex-1 overflow-y-auto p-5 space-y-3 text-sm"></div>
+    <div id="widget-steps" class="p-5 space-y-4 overflow-y-auto">
+      <div id="step-start" class="space-y-4">
+        <p class="text-sm leading-relaxed">
+          Привет! С какой задачей пришли? Выберите направление — покажем, как встроить ИИ в бизнес и повысить эффективность.
+        </p>
+        <div class="grid grid-cols-2 gap-2">
+          <button class="choice-btn" data-product="voice">Звонки</button>
+          <button class="choice-btn" data-product="chat">Чаты</button>
+          <button class="choice-btn" data-product="widget">Сайт-виджет</button>
+          <button class="choice-btn" data-product="broadcasts">Рассылки</button>
+          <button class="choice-btn" data-product="center">Чат-центр</button>
+          <button class="choice-btn" data-product="demo">Демо</button>
+        </div>
+      </div>
 
-    <form id="ai-form" class="border-t border-line p-3 flex gap-2">
-      <input id="ai-input" placeholder="Опишите задачу..." class="flex-1 px-3 py-2 bg-paper border border-line rounded-lg text-sm focus:outline-none focus:border-ink" />
-      <button class="px-4 py-2 bg-ink text-paper rounded-lg text-sm">↑</button>
-    </form>
+      <div id="step-goal" class="hidden space-y-4">
+        <p class="text-sm leading-relaxed">
+          Что важнее улучшить в первую очередь?
+        </p>
+        <div class="grid grid-cols-1 gap-2">
+          <button class="goal-btn" data-goal="leads">Больше заявок</button>
+          <button class="goal-btn" data-goal="routine">Меньше рутины</button>
+          <button class="goal-btn" data-goal="support">Поддержка 24/7</button>
+          <button class="goal-btn" data-goal="reactivation">Вернуть старых клиентов</button>
+        </div>
+      </div>
+
+      <form id="widget-form" class="hidden space-y-3">
+        <p class="text-sm leading-relaxed">
+          Отлично. Оставьте контакт — запишем на демо и покажем, как это может работать в вашем процессе.
+        </p>
+        <input name="name" required placeholder="Имя" class="widget-input" />
+        <input name="contact" required placeholder="Телефон или Telegram" class="widget-input" />
+        <textarea name="comment" rows="2" placeholder="Комментарий, если нужно" class="widget-input resize-none"></textarea>
+        <button class="w-full bg-paper text-ink rounded-lg px-4 py-3 text-sm font-semibold hover:opacity-90 transition">
+          Записаться на демо
+        </button>
+        <div id="widget-status" class="min-h-5 text-xs opacity-80"></div>
+      </form>
+
+      <div id="widget-success" class="hidden space-y-3">
+        <div class="text-lg font-semibold">Заявка отправлена</div>
+        <p class="text-sm leading-relaxed opacity-90">
+          Спасибо! Свяжемся и покажем демо продуктов под вашу задачу.
+        </p>
+      </div>
+    </div>
   </div>
 </div>
 
-<script>
-  const toggle = document.getElementById('ai-toggle')!;
-  const panel = document.getElementById('ai-panel')!;
-  const closeBtn = document.getElementById('ai-close')!;
-  const form = document.getElementById('ai-form') as HTMLFormElement;
-  const input = document.getElementById('ai-input') as HTMLInputElement;
-  const messages = document.getElementById('ai-messages')!;
-
-  const history: { role: string; content: string }[] = [];
-
-  function addMsg(role: 'user' | 'assistant', text: string) {
-    const el = document.createElement('div');
-    el.className = role === 'user'
-      ? 'ml-auto max-w-[80%] bg-ink text-paper px-3 py-2 rounded-2xl rounded-br-sm'
-      : 'mr-auto max-w-[85%] bg-paper px-3 py-2 rounded-2xl rounded-bl-sm';
-    el.textContent = text;
-    messages.appendChild(el);
-    messages.scrollTop = messages.scrollHeight;
-    return el;
+<style>
+  .choice-btn,
+  .goal-btn {
+    border: 1px solid rgba(255, 106, 0, 0.55);
+    border-radius: 8px;
+    padding: 10px 12px;
+    color: #FF6A00;
+    font-size: 14px;
+    line-height: 1.2;
+    text-align: left;
+    transition: background-color 160ms ease, color 160ms ease;
   }
 
-  toggle.addEventListener('click', () => {
-    panel.classList.toggle('hidden');
-    if (messages.children.length === 0) {
-      addMsg('assistant', 'Привет! Я помощник Поток. Расскажите, какую задачу хотите автоматизировать — подберу решение и посчитаю стоимость.');
+  .choice-btn:hover,
+  .goal-btn:hover {
+    background: #FF6A00;
+    color: #4B0082;
+  }
+
+  .widget-input {
+    width: 100%;
+    border: 1px solid rgba(255, 106, 0, 0.65);
+    border-radius: 8px;
+    background: #FF6A00;
+    color: #4B0082;
+    padding: 11px 12px;
+    font-size: 14px;
+    outline: none;
+  }
+
+  .widget-input::placeholder {
+    color: rgba(75, 0, 130, 0.62);
+  }
+
+  .widget-input:focus {
+    border-color: #FF6A00;
+    box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.25);
+  }
+</style>
+
+<script is:inline>
+  (() => {
+    const toggle = document.getElementById('ai-toggle');
+    const panel = document.getElementById('ai-panel');
+    const closeBtn = document.getElementById('ai-close');
+    const startStep = document.getElementById('step-start');
+    const goalStep = document.getElementById('step-goal');
+    const widgetForm = document.getElementById('widget-form');
+    const successStep = document.getElementById('widget-success');
+    const status = document.getElementById('widget-status');
+
+    if (!toggle || !panel || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !status) {
+      return;
     }
-  });
-  closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const text = input.value.trim();
-    if (!text) return;
-    addMsg('user', text);
-    history.push({ role: 'user', content: text });
-    input.value = '';
-    const thinking = addMsg('assistant', '...');
+    const state = {
+      product: 'demo',
+      goal: 'integration',
+    };
 
-    try {
-      const r = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: history }),
+    function showOnly(step) {
+      [startStep, goalStep, widgetForm, successStep].forEach((el) => el.classList.add('hidden'));
+      step.classList.remove('hidden');
+    }
+
+    function openPanel() {
+      panel.classList.remove('hidden');
+    }
+
+    toggle.addEventListener('click', () => {
+      panel.classList.toggle('hidden');
+    });
+
+    closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
+
+    document.querySelectorAll('.choice-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.product = button.dataset.product || 'demo';
+        showOnly(state.product === 'demo' ? widgetForm : goalStep);
       });
-      const data = await r.json();
-      thinking.textContent = data.reply || 'Не получилось ответить. Напишите hello@potok.ai';
-      history.push({ role: 'assistant', content: data.reply });
-    } catch {
-      thinking.textContent = 'Ошибка сети. Попробуйте позже.';
-    }
-  });
+    });
+
+    document.querySelectorAll('.goal-btn').forEach((button) => {
+      button.addEventListener('click', () => {
+        state.goal = button.dataset.goal || 'integration';
+        showOnly(widgetForm);
+      });
+    });
+
+    widgetForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = 'Отправляем...';
+      const formData = Object.fromEntries(new FormData(widgetForm));
+
+      try {
+        const response = await fetch('/api/widget-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ...formData, ...state }),
+        });
+
+        if (!response.ok) {
+          status.textContent = 'Не получилось отправить. Напишите нам в Telegram.';
+          return;
+        }
+
+        widgetForm.reset();
+        showOnly(successStep);
+      } catch {
+        status.textContent = 'Ошибка сети. Попробуйте ещё раз.';
+      }
+    });
+
+    window.setTimeout(openPanel, 5000);
+  })();
 </script>
