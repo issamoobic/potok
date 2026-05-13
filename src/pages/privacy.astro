@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Nav from '../components/Nav.astro';
+import Footer from '../components/Footer.astro';
+---
+<Base title="Политика конфиденциальности — Поток">
+  <Nav />
+  <article class="max-w-3xl mx-auto px-6 py-16 prose prose-neutral">
+    <h1 class="text-4xl font-medium tracking-tight mb-8">Политика конфиденциальности</h1>
+    <p class="text-muted">Редакция от 13.05.2026</p>
+
+    <h2 class="text-2xl font-medium mt-10 mb-3">1. Общие положения</h2>
+    <p>Настоящая Политика определяет порядок обработки персональных данных в соответствии с ФЗ-152 «О персональных данных».</p>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">2. Какие данные собираем</h2>
+    <ul class="list-disc pl-6">
+      <li>Имя</li>
+      <li>Номер телефона</li>
+      <li>Email</li>
+      <li>Описание задачи (опционально)</li>
+    </ul>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">3. Цели обработки</h2>
+    <ul class="list-disc pl-6">
+      <li>Связь с пользователем по заявке</li>
+      <li>Подготовка коммерческого предложения</li>
+      <li>Информационная рассылка (при отдельном согласии по 38-ФЗ)</li>
+    </ul>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">4. Хранение</h2>
+    <p>Данные хранятся на серверах, расположенных на территории РФ. Срок хранения — до отзыва согласия или 3 года с момента последнего контакта.</p>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">5. Передача третьим лицам</h2>
+    <p>Данные не передаются третьим лицам, за исключением сервисов обработки заявок (CRM-система) и почтовых сервисов на основании договоров о неразглашении.</p>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">6. Права пользователя</h2>
+    <p>Вы можете в любой момент отозвать согласие на обработку данных, направив запрос на <a href="mailto:hello@potok.ai" class="underline">hello@potok.ai</a>.</p>
+
+    <h2 class="text-2xl font-medium mt-8 mb-3">7. Контакты</h2>
+    <p>Оператор: ИП [ФИО], ИНН [номер]<br/>Email: hello@potok.ai</p>
+  </article>
+  <Footer />
+</Base>

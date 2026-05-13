@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://potok.ai/sitemap-index.xml

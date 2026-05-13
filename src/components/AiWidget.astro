@@ -1,0 +1,77 @@
+---
+---
+<div id="ai-widget" class="fixed bottom-6 right-6 z-50">
+  <button id="ai-toggle" class="w-14 h-14 rounded-full bg-ink text-paper shadow-lg hover:scale-105 transition flex items-center justify-center text-2xl">
+    ✨
+  </button>
+
+  <div id="ai-panel" class="hidden absolute bottom-20 right-0 w-[min(380px,calc(100vw-3rem))] bg-white border border-line rounded-2xl shadow-2xl flex flex-col" style="height: 520px;">
+    <div class="px-5 py-4 border-b border-line flex justify-between items-center">
+      <div>
+        <div class="font-medium">Помощник Поток</div>
+        <div class="text-xs text-muted">Отвечает мгновенно</div>
+      </div>
+      <button id="ai-close" class="text-muted hover:text-ink text-xl">×</button>
+    </div>
+
+    <div id="ai-messages" class="flex-1 overflow-y-auto p-5 space-y-3 text-sm"></div>
+
+    <form id="ai-form" class="border-t border-line p-3 flex gap-2">
+      <input id="ai-input" placeholder="Опишите задачу..." class="flex-1 px-3 py-2 bg-paper border border-line rounded-lg text-sm focus:outline-none focus:border-ink" />
+      <button class="px-4 py-2 bg-ink text-paper rounded-lg text-sm">↑</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const toggle = document.getElementById('ai-toggle')!;
+  const panel = document.getElementById('ai-panel')!;
+  const closeBtn = document.getElementById('ai-close')!;
+  const form = document.getElementById('ai-form') as HTMLFormElement;
+  const input = document.getElementById('ai-input') as HTMLInputElement;
+  const messages = document.getElementById('ai-messages')!;
+
+  const history: { role: string; content: string }[] = [];
+
+  function addMsg(role: 'user' | 'assistant', text: string) {
+    const el = document.createElement('div');
+    el.className = role === 'user'
+      ? 'ml-auto max-w-[80%] bg-ink text-paper px-3 py-2 rounded-2xl rounded-br-sm'
+      : 'mr-auto max-w-[85%] bg-paper px-3 py-2 rounded-2xl rounded-bl-sm';
+    el.textContent = text;
+    messages.appendChild(el);
+    messages.scrollTop = messages.scrollHeight;
+    return el;
+  }
+
+  toggle.addEventListener('click', () => {
+    panel.classList.toggle('hidden');
+    if (messages.children.length === 0) {
+      addMsg('assistant', 'Привет! Я помощник Поток. Расскажите, какую задачу хотите автоматизировать — подберу решение и посчитаю стоимость.');
+    }
+  });
+  closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = input.value.trim();
+    if (!text) return;
+    addMsg('user', text);
+    history.push({ role: 'user', content: text });
+    input.value = '';
+    const thinking = addMsg('assistant', '...');
+
+    try {
+      const r = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      });
+      const data = await r.json();
+      thinking.textContent = data.reply || 'Не получилось ответить. Напишите hello@potok.ai';
+      history.push({ role: 'assistant', content: data.reply });
+    } catch {
+      thinking.textContent = 'Ошибка сети. Попробуйте позже.';
+    }
+  });
+</script>

@@ -1,0 +1,22 @@
+---
+const problems = [
+  { t: 'Менеджеры тонут в рутине', d: 'Однотипные вопросы клиентов съедают 60% времени. Дорогие сотрудники работают как FAQ-бот.' },
+  { t: 'Лиды теряются ночью', d: 'Заявка пришла в 23:00 — клиент уже у конкурента к утру. Скорость ответа = деньги.' },
+  { t: 'Колл-центр не масштабируется', d: 'Сезон — нужно ×3 операторов. Найм, обучение, текучка. Бюджет горит.' },
+  { t: 'База клиентов «спит»', d: 'Тысячи контактов, которым давно не звонили. Прозвонить вручную — нереально.' },
+];
+---
+<section class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
+  <div class="text-xs uppercase tracking-widest text-muted mb-3">Что болит</div>
+  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
+    Знакомо?
+  </h2>
+  <div class="grid md:grid-cols-2 gap-px bg-line">
+    {problems.map(p => (
+      <div class="bg-paper p-8">
+        <div class="text-xl font-medium mb-2">{p.t}</div>
+        <div class="text-muted leading-relaxed">{p.d}</div>
+      </div>
+    ))}
+  </div>
+</section>

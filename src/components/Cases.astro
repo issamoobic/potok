@@ -1,0 +1,23 @@
+---
+const cases = [
+  { client: 'Сеть автосервисов', metric: '×4.1', desc: 'конверсия в запись', text: 'Голосовой агент обзванивает базу после ТО. Записывает на следующее обслуживание. 800 звонков/день.' },
+  { client: 'Онлайн-школа', metric: '−72%', desc: 'нагрузка на менеджеров', text: 'Чат-агент консультирует по курсам, обрабатывает оплаты, выдаёт доступы. Менеджеры занимаются только сложными кейсами.' },
+  { client: 'Доставка еды', metric: '24/7', desc: 'приём заказов', text: 'GPT-виджет на сайте принимает заказы ночью. Утром в CRM — готовые сделки.' },
+];
+---
+<section id="cases" class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
+  <div class="text-xs uppercase tracking-widest text-muted mb-3">Кейсы</div>
+  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
+    Цифры, а не обещания.
+  </h2>
+  <div class="grid md:grid-cols-3 gap-3">
+    {cases.map(c => (
+      <div class="bg-white rounded-2xl p-7 border border-line">
+        <div class="text-xs uppercase tracking-widest text-muted mb-4">{c.client}</div>
+        <div class="text-5xl font-medium tracking-tight mb-1">{c.metric}</div>
+        <div class="text-sm text-muted mb-5">{c.desc}</div>
+        <div class="text-sm leading-relaxed">{c.text}</div>
+      </div>
+    ))}
+  </div>
+</section>

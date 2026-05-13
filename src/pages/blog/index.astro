@@ -1,0 +1,27 @@
+---
+import Base from '../../layouts/Base.astro';
+import Nav from '../../components/Nav.astro';
+import Footer from '../../components/Footer.astro';
+import { getCollection } from 'astro:content';
+
+const posts = (await getCollection('blog')).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf()
+);
+---
+<Base title="Блог — Поток" description="Кейсы, гайды и разборы по ИИ-агентам для бизнеса.">
+  <Nav />
+  <section class="max-w-3xl mx-auto px-6 py-16">
+    <div class="text-xs uppercase tracking-widest text-muted mb-3">Блог</div>
+    <h1 class="text-5xl font-medium tracking-tight mb-12">Как ИИ работает в бизнесе.</h1>
+    <div class="space-y-px bg-line">
+      {posts.map(p => (
+        <a href={`/blog/${p.slug}`} class="block bg-paper py-7 hover:pl-3 transition-all">
+          <div class="text-xs text-muted mb-1">{p.data.date.toLocaleDateString('ru-RU')}</div>
+          <div class="text-2xl font-medium">{p.data.title}</div>
+          <div class="text-muted mt-1">{p.data.description}</div>
+        </a>
+      ))}
+    </div>
+  </section>
+  <Footer />
+</Base>

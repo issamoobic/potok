@@ -1,0 +1,26 @@
+---
+const products = [
+  { icon: '📞', t: 'Голосовой агент', d: 'Входящие и исходящие звонки. Распознаёт эмоции, паузы, намерения. Лидген, реактивация, поддержка.', dark: false },
+  { icon: '💬', t: 'Чат-агент', d: 'WhatsApp, Telegram, сайт. Опирается на базу знаний, принимает фото и документы.', dark: false },
+  { icon: '🗂', t: 'Единый чат-центр', d: 'Все каналы в одном окне для операторов. История, передача диалога между человеком и ИИ.', dark: false },
+  { icon: '📨', t: 'Массовые рассылки', d: 'Уведомления, акции, статусы заказов через мессенджеры, SMS, соцсети.', dark: false },
+  { icon: '🟢', t: 'Виджет на сайт', d: 'Оператор в рабочее время, ИИ — в нерабочее. Бесшовное переключение 24/7/365.', dark: false },
+  { icon: '✨', t: 'GPT-виджет', d: 'Отвечает мгновенно. Собирает контакты. Заменяет операторов ночью. Повышает конверсию.', dark: true },
+];
+---
+<section id="products" class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
+  <div class="text-xs uppercase tracking-widest text-muted mb-3">Продукты</div>
+  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
+    Шесть решений. Один разговор с клиентом.
+  </h2>
+
+  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
+    {products.map(p => (
+      <div class={`rounded-2xl p-7 border ${p.dark ? 'bg-ink text-paper border-ink' : 'bg-white border-line'} hover:scale-[1.01] transition`}>
+        <div class="text-2xl mb-5">{p.icon}</div>
+        <div class="text-lg font-medium mb-2">{p.t}</div>
+        <div class={`text-sm leading-relaxed ${p.dark ? 'opacity-70' : 'text-muted'}`}>{p.d}</div>
+      </div>
+    ))}
+  </div>
+</section>

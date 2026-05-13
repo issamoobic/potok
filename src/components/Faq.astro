@@ -1,0 +1,27 @@
+---
+const faq = [
+  { q: 'Где хранятся данные клиентов?', a: 'Только в РФ — Selectel/VK Cloud. Соответствие 152-ФЗ. По запросу — отдельный контур на вашем сервере.' },
+  { q: 'Звучит ли голосовой агент как робот?', a: 'Нет. Современные модели синтеза речи неотличимы от человека для 90% звонящих. Можно прислушать примеры на брифе.' },
+  { q: 'Сколько стоит?', a: 'Чат-агент — от 80 000 ₽ за внедрение + от 15 000 ₽/мес. Голосовой — от 150 000 ₽ + минуты разговора. Точно — после брифа.' },
+  { q: 'Что если ИИ ошибётся в разговоре?', a: 'Сложные запросы автоматически передаём оператору с историей диалога. ИИ не отвечает на то, в чём не уверен.' },
+  { q: 'Можно ли интегрировать с нашей CRM?', a: 'Битрикс24, amoCRM, 1С, Retail CRM — из коробки. Любая другая — через API за 1–2 дня.' },
+  { q: 'Что нужно от нас для запуска?', a: 'База знаний (можно в свободной форме), доступы к CRM/телефонии, 1–2 созвона по 30 минут. Всё остальное — на нас.' },
+];
+---
+<section class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
+  <div class="text-xs uppercase tracking-widest text-muted mb-3">Вопросы</div>
+  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
+    Спрашивают часто.
+  </h2>
+  <div class="space-y-px bg-line max-w-3xl">
+    {faq.map(f => (
+      <details class="bg-paper group">
+        <summary class="py-6 cursor-pointer flex justify-between items-center list-none">
+          <span class="text-lg font-medium pr-6">{f.q}</span>
+          <span class="text-2xl text-muted group-open:rotate-45 transition">+</span>
+        </summary>
+        <div class="pb-6 text-muted leading-relaxed">{f.a}</div>
+      </details>
+    ))}
+  </div>
+</section>

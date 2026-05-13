@@ -1,0 +1,33 @@
+---
+import '../styles/global.css';
+const { title = 'Поток — ИИ-агенты для бизнеса', description = 'Голосовые и чат-агенты, рассылки, виджеты. Внедрение под ключ.' } = Astro.props;
+---
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+    <!-- Я.Метрика — вставь ID после регистрации -->
+  </head>
+  <body class="grain">
+    <slot />
+    <script>
+      // Smooth scroll для якорей
+      document.querySelectorAll('a[href^="#"]').forEach(a => {
+        a.addEventListener('click', e => {
+          const id = a.getAttribute('href');
+          if (id && id.length > 1) {
+            e.preventDefault();
+            document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
