@@ -6,16 +6,19 @@ const problems = [
   { t: 'База клиентов «спит»', d: 'Тысячи контактов, которым давно не звонили. Прозвонить вручную — нереально.' },
 ];
 ---
-<section class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
-  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
-    Знакомо?
+<section class="section-warm" data-logo-theme="warm">
+  <div class="section-shell">
+  <div class="eyebrow !text-ink/70 mb-4">Операционные потери</div>
+  <h2 class="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mb-12">
+    Где бизнес теряет скорость
   </h2>
-  <div class="grid md:grid-cols-2 gap-px bg-line">
+  <div class="grid md:grid-cols-2 gap-4">
     {problems.map(p => (
-      <div class="bg-paper p-8 border border-line">
-        <div class="text-xl font-medium mb-2">{p.t}</div>
-        <div class="text-muted leading-relaxed">{p.d}</div>
+      <div class="warm-card p-7 md:p-8">
+        <div class="text-2xl font-semibold mb-3">{p.t}</div>
+        <div class="text-ink/70 leading-relaxed">{p.d}</div>
       </div>
     ))}
+  </div>
   </div>
 </section>

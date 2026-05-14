@@ -6,19 +6,22 @@ const steps = [
   { n: '04', t: 'Сопровождение', d: 'Дообучаем на ваших разговорах. Раз в месяц — отчёт с метриками и точками роста.' },
 ];
 ---
-<section class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
-  <h2 class="text-4xl md:text-5xl font-medium tracking-tight max-w-2xl mb-12">
-    Запуск за 2–3 недели.
+<section class="section-dark" data-logo-theme="dark">
+  <div class="section-shell">
+  <div class="eyebrow mb-4">Внедрение</div>
+  <h2 class="text-4xl md:text-6xl font-bold tracking-tight max-w-3xl mb-12">
+    Запуск без тяжёлого IT-проекта.
   </h2>
-  <div class="space-y-px bg-line">
+  <div class="grid gap-4">
     {steps.map(s => (
-      <div class="bg-paper py-8 border-t border-line flex flex-col md:flex-row gap-6 md:gap-12">
-        <div class="text-5xl font-medium tracking-tight text-muted md:w-32">{s.n}</div>
+      <div class="premium-card p-7 md:p-8 flex flex-col md:flex-row gap-6 md:gap-12">
+        <div class="text-5xl font-semibold tracking-tight text-paper md:w-32">{s.n}</div>
         <div class="md:flex-1">
-          <div class="text-2xl font-medium mb-2">{s.t}</div>
-          <div class="text-muted leading-relaxed max-w-xl">{s.d}</div>
+          <div class="text-2xl font-semibold mb-3">{s.t}</div>
+          <div class="text-white/62 leading-relaxed max-w-xl">{s.d}</div>
         </div>
       </div>
     ))}
+  </div>
   </div>
 </section>

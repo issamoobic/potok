@@ -1,17 +1,26 @@
 ---
 ---
 <div id="ai-widget" class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50">
-  <button id="ai-toggle" class="w-20 h-20 rounded-full bg-ink text-paper shadow-2xl hover:scale-105 transition flex items-center justify-center text-2xl font-semibold border-2 border-paper">
+  <button id="ai-nudge" class="hidden max-sm:!hidden absolute bottom-20 right-0 w-[340px] rounded-2xl border border-white/14 bg-[#150823]/95 p-5 text-left text-sm text-white shadow-2xl backdrop-blur-xl hover:border-paper/45 transition">
+    <div class="text-lg font-semibold leading-tight text-paper">Показать демо ИИ-агентов?</div>
+    <div class="mt-2 text-sm leading-relaxed text-white/68">
+      Подскажем, где ИИ сэкономит время, и покажем сценарий под ваш бизнес.
+    </div>
+    <div class="mt-4 inline-flex rounded-full bg-paper px-4 py-2 text-xs font-semibold text-ink">
+      Подобрать решение
+    </div>
+  </button>
+  <button id="ai-toggle" class="widget-pulse w-16 h-16 rounded-full text-white shadow-2xl hover:scale-[1.04] transition flex items-center justify-center text-xl font-semibold border border-paper/35">
     KS
   </button>
 
-  <div id="ai-panel" class="hidden absolute bottom-24 right-0 w-[min(390px,calc(100vw-2.5rem))] bg-ink text-paper border-2 border-paper rounded-lg shadow-2xl overflow-hidden flex flex-col" style="max-height: calc(100vh - 8rem);">
-    <div class="px-5 py-4 border-b border-paper/35 flex justify-between items-start gap-4">
+  <div id="ai-panel" class="hidden absolute bottom-20 right-0 w-[min(360px,calc(100vw-2.5rem))] bg-[#150823]/95 text-white border border-white/14 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-xl" style="max-height: calc(100vh - 8rem);">
+    <div class="px-5 py-4 border-b border-white/10 flex justify-between items-start gap-4">
       <div>
-        <div class="font-semibold leading-tight">Покажем, где ИИ сэкономит время</div>
-        <div class="text-xs opacity-75 mt-1">Подберём демо под ваш бизнес</div>
+        <div class="font-semibold leading-tight text-paper">Покажем, где ИИ сэкономит время</div>
+        <div class="text-xs text-white/58 mt-1">Подберём демо под ваш бизнес</div>
       </div>
-      <button id="ai-close" class="text-paper/75 hover:text-paper text-xl leading-none" aria-label="Закрыть">×</button>
+      <button id="ai-close" class="text-white/50 hover:text-paper text-xl leading-none" aria-label="Закрыть">×</button>
     </div>
 
     <div id="widget-steps" class="p-5 space-y-4 overflow-y-auto">
@@ -67,35 +76,37 @@
 <style>
   .choice-btn,
   .goal-btn {
-    border: 1px solid rgba(255, 106, 0, 0.55);
-    border-radius: 8px;
+    border: 1px solid rgba(255, 106, 0, 0.34);
+    border-radius: 10px;
     padding: 10px 12px;
     color: #FF6A00;
     font-size: 14px;
     line-height: 1.2;
     text-align: left;
-    transition: background-color 160ms ease, color 160ms ease;
+    background: rgba(255, 255, 255, 0.035);
+    transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
   }
 
   .choice-btn:hover,
   .goal-btn:hover {
-    background: #FF6A00;
-    color: #4B0082;
+    background: rgba(255, 106, 0, 0.16);
+    border-color: rgba(255, 106, 0, 0.68);
+    color: #FF8A2A;
   }
 
   .widget-input {
     width: 100%;
-    border: 1px solid rgba(255, 106, 0, 0.65);
-    border-radius: 8px;
-    background: #FF6A00;
-    color: #4B0082;
+    border: 1px solid rgba(255, 106, 0, 0.36);
+    border-radius: 10px;
+    background: rgba(255, 255, 255, 0.055);
+    color: #fff4eb;
     padding: 11px 12px;
     font-size: 14px;
     outline: none;
   }
 
   .widget-input::placeholder {
-    color: rgba(75, 0, 130, 0.62);
+    color: rgba(255, 244, 235, 0.48);
   }
 
   .widget-input:focus {
@@ -108,6 +119,7 @@
   (() => {
     const toggle = document.getElementById('ai-toggle');
     const panel = document.getElementById('ai-panel');
+    const nudge = document.getElementById('ai-nudge');
     const closeBtn = document.getElementById('ai-close');
     const startStep = document.getElementById('step-start');
     const goalStep = document.getElementById('step-goal');
@@ -115,7 +127,7 @@
     const successStep = document.getElementById('widget-success');
     const status = document.getElementById('widget-status');
 
-    if (!toggle || !panel || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !status) {
+    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !status) {
       return;
     }
 
@@ -130,12 +142,15 @@
     }
 
     function openPanel() {
+      nudge.classList.add('hidden');
       panel.classList.remove('hidden');
     }
 
     toggle.addEventListener('click', () => {
+      nudge.classList.add('hidden');
       panel.classList.toggle('hidden');
     });
+    nudge.addEventListener('click', openPanel);
 
     closeBtn.addEventListener('click', () => panel.classList.add('hidden'));
 
@@ -177,6 +192,10 @@
       }
     });
 
-    window.setTimeout(openPanel, 5000);
+    window.setTimeout(() => {
+      if (panel.classList.contains('hidden')) {
+        nudge.classList.remove('hidden');
+      }
+    }, 5000);
   })();
 </script>

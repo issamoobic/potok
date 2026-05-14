@@ -1,11 +1,14 @@
 import { defineConfig } from 'astro/config';
-import vercel from '@astrojs/vercel';
+import node from '@astrojs/node';
 import mdx from '@astrojs/mdx';
 import tailwind from '@astrojs/tailwind';
 
+// На VPS задайте PUBLIC_SITE_URL=https://ваш-домен.ru (для canonical, sitemap и т.п.)
+const site = process.env.PUBLIC_SITE_URL || 'https://potok.ai';
+
 export default defineConfig({
-  site: 'https://potok.ai',
+  site,
   output: 'server',
-  adapter: vercel(),
+  adapter: node({ mode: 'standalone' }),
   integrations: [tailwind(), mdx()],
 });

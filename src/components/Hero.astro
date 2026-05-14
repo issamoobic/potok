@@ -1,33 +1,70 @@
 ---
+const heroProducts = [
+  { n: '01', t: 'Голосовой агент', d: 'Звонки, запись, реактивация базы.' },
+  { n: '02', t: 'Чат-агент', d: 'Telegram, WhatsApp, сайт и поддержка.' },
+  { n: '03', t: 'Email-агент', d: 'Ответы, follow-up и квалификация.' },
+  { n: '04', t: 'Сайт-виджет', d: 'Демо, лиды и первичный бриф.' },
+  { n: '05', t: 'Рассылки', d: 'Сегменты, возврат и уведомления.' },
+  { n: '06', t: 'Чат-центр', d: 'Единое окно для ИИ и операторов.' },
+];
 ---
-<section class="max-w-6xl mx-auto px-5 sm:px-6 pt-3 pb-20 md:pb-24">
-  <div class="max-w-2xl">
-    <p class="text-2xl md:text-3xl text-ink font-semibold mt-1 leading-snug">
-      ИИ-агенты для звонков, чатов и рассылок. Автоматизируем рутину операторов и менеджеров, чтобы заявки обрабатывались быстрее.
-    </p>
+<section class="section-dark" data-logo-theme="dark">
+  <div class="section-shell pt-16 md:pt-24">
+    <div class="grid lg:grid-cols-[minmax(0,0.95fr)_minmax(440px,1.05fr)] gap-12 lg:gap-14 items-center">
+      <div>
+        <div class="eyebrow mb-5">Платформа бизнес-автоматизации</div>
+        <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tightest leading-[0.98] max-w-3xl">
+          ИИ-системы, которые берут операционку на себя
+        </h1>
+        <p class="mt-7 text-lg md:text-xl leading-8 text-white/68 max-w-2xl">
+          KROPOT SYSTEMS внедряет голосовых, чат- и email-агентов, связывает их с CRM, календарями и аналитикой, чтобы бизнес быстрее обрабатывал заявки и меньше зависел от ручной рутины.
+        </p>
 
-    <div class="flex flex-wrap gap-3 mt-8">
-      <a href="#contact" class="px-6 py-3.5 bg-ink text-paper rounded-full text-[15px] font-medium hover:opacity-90 transition">
-        Получить расчёт
-      </a>
-      <a href="#cases" class="px-6 py-3.5 border border-ink rounded-full text-[15px] hover:bg-ink hover:text-paper transition">
-        Посмотреть кейсы
-      </a>
-    </div>
-  </div>
+        <div class="flex flex-col sm:flex-row gap-3 mt-9">
+          <a href="#contact" class="cta-glow rounded-full px-7 py-4 text-center text-[15px] font-semibold text-white">
+            Получить расчёт
+          </a>
+          <a href="#products" class="rounded-full px-7 py-4 text-center text-[15px] font-semibold text-white/82 border border-white/16 hover:border-paper/50 hover:text-paper transition">
+            Посмотреть систему
+          </a>
+        </div>
 
-  <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mt-14 pt-10 border-t border-line max-w-3xl">
-    <div>
-      <div class="text-3xl md:text-4xl font-medium tracking-tight">68%</div>
-      <div class="text-sm text-muted mt-1">меньше рутины в колл-центре</div>
-    </div>
-    <div>
-      <div class="text-3xl md:text-4xl font-medium tracking-tight">3.4x</div>
-      <div class="text-sm text-muted mt-1">рост конверсии в заявку</div>
-    </div>
-    <div>
-      <div class="text-3xl md:text-4xl font-medium tracking-tight">24/7</div>
-      <div class="text-sm text-muted mt-1">обработка обращений</div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-12 max-w-2xl">
+          <div class="premium-card p-5">
+            <div class="text-3xl md:text-4xl font-semibold text-paper">68%</div>
+            <div class="text-xs md:text-sm text-white/58 mt-2 leading-relaxed">меньше рутины в колл-центре</div>
+          </div>
+          <div class="premium-card p-5">
+            <div class="text-3xl md:text-4xl font-semibold text-paper">3.4x</div>
+            <div class="text-xs md:text-sm text-white/58 mt-2 leading-relaxed">рост конверсии в заявку</div>
+          </div>
+          <div class="premium-card p-5">
+            <div class="text-3xl md:text-4xl font-semibold text-paper">24/7</div>
+            <div class="text-xs md:text-sm text-white/58 mt-2 leading-relaxed">обработка обращений</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="workflow-card p-6 md:p-7 flex flex-col justify-between">
+        <div class="relative z-[1] flex items-center justify-between gap-4">
+          <div class="text-xs uppercase tracking-[0.22em] text-white/45">Продукты</div>
+          <div class="rounded-full border border-paper/30 px-4 py-2 text-xs text-paper/85">6 модулей</div>
+        </div>
+
+        <div class="relative z-[1] grid sm:grid-cols-2 gap-3 py-7">
+          {heroProducts.map((product) => (
+            <div class="premium-card p-4">
+              <div class="text-xs text-paper/75 mb-3">{product.n}</div>
+              <div class="text-base font-semibold">{product.t}</div>
+              <div class="mt-2 text-xs leading-relaxed text-white/58">{product.d}</div>
+            </div>
+          ))}
+        </div>
+
+        <div class="relative z-[1] rounded-2xl border border-paper/20 bg-white/[0.04] px-4 py-3 text-sm text-white/62">
+          Эти же продукты ниже раскрыты подробнее.
+        </div>
+      </div>
     </div>
   </div>
 </section>

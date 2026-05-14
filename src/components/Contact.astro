@@ -1,38 +1,39 @@
 ---
 ---
-<section id="contact" class="max-w-6xl mx-auto px-6 py-20 border-t border-line">
-  <div class="grid md:grid-cols-2 gap-12">
+<section id="contact" class="section-warm" data-logo-theme="warm">
+  <div class="section-shell">
+  <div class="grid md:grid-cols-[0.9fr_1.1fr] gap-12 items-start">
     <div>
-      <h2 class="text-4xl md:text-5xl font-medium tracking-tight mb-6">
-        Расскажите про задачу.
+      <h2 class="text-4xl md:text-6xl font-bold tracking-tight mb-6">
+        Покажем, где ИИ сэкономит время.
       </h2>
-      <p class="text-muted leading-relaxed max-w-md mb-8">
-        Свяжемся в течение часа в рабочее время. Бриф — бесплатно, без обязательств.
+      <p class="text-ink/72 leading-relaxed max-w-md mb-8 text-lg">
+        Разберём вашу воронку, подберём агента и покажем, как встроить автоматизацию в текущие процессы.
       </p>
-      <div class="text-sm text-muted space-y-2">
+      <div class="text-sm text-ink/70 space-y-2">
         <div>Email: hello@potok.ai</div>
         <div>Телефон: +7 (999) 000-00-00</div>
         <div>Telegram: @potok_ai</div>
       </div>
     </div>
 
-    <form id="lead-form" class="bg-paper border border-line rounded-lg p-6 sm:p-8 space-y-4">
+    <form id="lead-form" class="warm-card p-6 sm:p-8 space-y-4">
       <div>
-        <label class="text-sm text-muted">Имя</label>
-        <input name="name" required class="w-full mt-1 px-4 py-3 bg-paper border border-line rounded-lg focus:outline-none focus:border-ink transition" />
+        <label class="text-sm text-ink/68">Имя</label>
+        <input name="name" required class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition" />
       </div>
       <div>
-        <label class="text-sm text-muted">Телефон или email</label>
-        <input name="contact" required class="w-full mt-1 px-4 py-3 bg-paper border border-line rounded-lg focus:outline-none focus:border-ink transition" />
+        <label class="text-sm text-ink/68">Телефон или email</label>
+        <input name="contact" required class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition" />
       </div>
       <div>
-        <label class="text-sm text-muted">Задача</label>
-        <textarea name="task" rows="3" class="w-full mt-1 px-4 py-3 bg-paper border border-line rounded-lg focus:outline-none focus:border-ink transition resize-none" placeholder="Например: автоматизировать первичную консультацию в чате"></textarea>
+        <label class="text-sm text-ink/68">Задача</label>
+        <textarea name="task" rows="3" class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition resize-none placeholder:text-ink/45" placeholder="Например: автоматизировать первичную консультацию в чате"></textarea>
       </div>
 
       <label class="flex gap-3 items-start text-sm cursor-pointer">
         <input type="checkbox" name="consent_pd" required class="mt-1 flex-shrink-0" />
-        <span class="text-muted">
+        <span class="text-ink/70">
           Согласен на обработку персональных данных согласно
           <a href="/privacy" class="underline text-ink">Политике конфиденциальности</a> (152-ФЗ).
         </span>
@@ -40,16 +41,17 @@
 
       <label class="flex gap-3 items-start text-sm cursor-pointer">
         <input type="checkbox" name="consent_ad" class="mt-1 flex-shrink-0" />
-        <span class="text-muted">
+        <span class="text-ink/70">
           Согласен получать рекламные материалы и предложения (38-ФЗ).
         </span>
       </label>
 
-      <button type="submit" class="w-full py-3.5 bg-ink text-paper rounded-lg font-medium hover:opacity-90 transition">
+      <button type="submit" class="w-full py-3.5 cta-glow text-white rounded-lg font-semibold transition">
         Отправить заявку
       </button>
-      <div id="form-status" class="text-sm text-center text-muted"></div>
+      <div id="form-status" class="text-sm text-center text-ink/70"></div>
     </form>
+  </div>
   </div>
 </section>
 
