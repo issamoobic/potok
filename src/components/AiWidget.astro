@@ -129,6 +129,16 @@
     const widgetForm = document.getElementById('widget-form');
     const successStep = document.getElementById('widget-success');
     const status = document.getElementById('widget-status');
+    const contactFallback = `
+      <div class="space-y-3">
+        <div class="text-xs leading-relaxed text-white/78">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
+        <div class="grid grid-cols-1 gap-2">
+          <a href="https://t.me/potok_ai" target="_blank" rel="noopener" class="rounded-lg bg-paper px-3 py-2 text-center text-xs font-semibold text-ink">Telegram</a>
+          <a href="mailto:hello@potok.ai" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Email</a>
+          <a href="tel:+79990000000" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Позвонить</a>
+        </div>
+      </div>
+    `;
 
     if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !status) {
       return;
@@ -184,14 +194,14 @@
         });
 
         if (!response.ok) {
-          status.textContent = 'Не получилось отправить. Напишите нам в Telegram.';
+          status.innerHTML = contactFallback;
           return;
         }
 
         widgetForm.reset();
         showOnly(successStep);
       } catch {
-        status.textContent = 'Ошибка сети. Попробуйте ещё раз.';
+        status.innerHTML = contactFallback;
       }
     });
 

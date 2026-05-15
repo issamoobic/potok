@@ -58,6 +58,17 @@
 <script>
   const form = document.getElementById('lead-form') as HTMLFormElement;
   const status = document.getElementById('form-status')!;
+  const contactFallback = `
+    <div class="space-y-3">
+      <div class="font-semibold text-ink">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
+      <div class="flex flex-wrap justify-center gap-2">
+        <a href="https://t.me/potok_ai" target="_blank" rel="noopener" class="inline-flex min-h-10 items-center rounded-full bg-ink px-4 text-sm font-semibold text-paper">Telegram</a>
+        <a href="mailto:hello@potok.ai" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Email</a>
+        <a href="tel:+79990000000" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Позвонить</a>
+      </div>
+    </div>
+  `;
+
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
     status.textContent = 'Отправляем...';
@@ -68,14 +79,16 @@
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
+      const result = await r.json().catch(() => ({}));
+
       if (r.ok) {
         status.textContent = '✓ Заявка отправлена. Свяжемся в течение часа.';
         form.reset();
       } else {
-        status.textContent = '✗ Ошибка. Напишите в Telegram: @potok_ai';
+        status.innerHTML = contactFallback;
       }
     } catch {
-      status.textContent = '✗ Ошибка сети. Попробуйте ещё раз.';
+      status.innerHTML = contactFallback;
     }
   });
 </script>
