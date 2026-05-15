@@ -119,6 +119,17 @@ body {
   color: var(--ks-orange);
 }
 
+#site-nav.logo-on-warm .nav-contact-button {
+  border-color: rgba(75, 0, 130, 0.35);
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.94));
+  color: var(--ks-orange);
+}
+
+#site-nav.logo-on-warm .nav-contact-button:hover {
+  color: #fff4eb;
+  box-shadow: 0 18px 42px rgba(75, 0, 130, 0.28), 0 0 30px rgba(75, 0, 130, 0.18);
+}
+
 #site-nav.logo-on-warm .telegram-button {
   color: var(--ks-orange);
 }
@@ -167,13 +178,13 @@ body {
   gap: 0.55rem;
   min-height: 2.75rem;
   padding: 0.7rem 1rem;
-  border: 1px solid rgba(75, 0, 130, 0.3);
+  border: 1px solid rgba(255, 106, 0, 0.42);
   border-radius: 999px;
   color: var(--ks-orange);
   background:
-    linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.9)),
-    radial-gradient(circle at 85% 10%, rgba(255, 106, 0, 0.28), transparent 7rem);
-  box-shadow: 0 18px 44px rgba(75, 0, 130, 0.18), 0 0 28px rgba(75, 0, 130, 0.1);
+    linear-gradient(135deg, rgba(75, 0, 130, 1), rgba(124, 24, 178, 0.96) 58%, rgba(255, 106, 0, 0.92)),
+    radial-gradient(circle at 85% 10%, rgba(255, 174, 84, 0.5), transparent 7rem);
+  box-shadow: 0 18px 44px rgba(75, 0, 130, 0.24), 0 0 34px rgba(255, 106, 0, 0.18);
   font-weight: 800;
   transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease);
 }
@@ -204,7 +215,7 @@ body {
 }
 
 .telegram-button strong {
-  color: var(--ks-orange);
+  color: #ffb36f;
   font-weight: 900;
 }
 
@@ -219,10 +230,10 @@ body {
 }
 
 .telegram-button--nav {
-  min-height: 2.5rem;
-  padding: 0.52rem 0.82rem;
-  font-size: 0.78rem;
-  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.22), 0 0 24px rgba(255, 106, 0, 0.12);
+  min-height: 2.8rem;
+  padding: 0.58rem 0.95rem;
+  font-size: 0.84rem;
+  box-shadow: 0 16px 38px rgba(75, 0, 130, 0.28), 0 0 30px rgba(255, 106, 0, 0.2);
 }
 
 .telegram-button--nav .telegram-button__icon {
@@ -232,12 +243,96 @@ body {
 
 @media (max-width: 767px) {
   .telegram-button--nav {
-    padding: 0.5rem 0.68rem;
+    padding: 0.54rem 0.75rem;
   }
 
   .telegram-button--nav strong {
     display: none;
   }
+}
+
+.nav-contact-button {
+  align-items: center;
+  justify-content: center;
+  min-height: 2.8rem;
+  padding: 0.58rem 1.12rem;
+  border: 1px solid rgba(255, 106, 0, 0.55);
+  border-radius: 999px;
+  background:
+    linear-gradient(135deg, #ff6a00, #ff8a2a 48%, #4b0082),
+    radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.42), transparent 4rem);
+  color: #fff4eb;
+  font-weight: 900;
+  box-shadow: 0 16px 40px rgba(255, 106, 0, 0.25), 0 0 28px rgba(75, 0, 130, 0.16);
+  transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease);
+}
+
+.nav-contact-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 244, 235, 0.85);
+  box-shadow: 0 22px 50px rgba(255, 106, 0, 0.32), 0 0 36px rgba(75, 0, 130, 0.24);
+}
+
+.widget-telegram-link,
+.widget-contact-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.45rem;
+  border-radius: 0.75rem;
+  font-size: 0.82rem;
+  font-weight: 900;
+  transition: transform 220ms var(--ks-ease), box-shadow 220ms var(--ks-ease), border-color 220ms var(--ks-ease);
+}
+
+.widget-telegram-link {
+  gap: 0.48rem;
+  border: 1px solid rgba(255, 106, 0, 0.55);
+  background:
+    linear-gradient(135deg, rgba(75, 0, 130, 1), rgba(120, 23, 174, 0.96) 58%, rgba(255, 106, 0, 0.94)),
+    radial-gradient(circle at 88% 12%, rgba(255, 174, 84, 0.48), transparent 5rem);
+  color: #ffb36f;
+  box-shadow: 0 16px 38px rgba(75, 0, 130, 0.32), 0 0 30px rgba(255, 106, 0, 0.18);
+}
+
+.widget-telegram-link__icon {
+  display: grid;
+  place-items: center;
+  width: 1.42rem;
+  height: 1.42rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(180deg, #37aee2 0%, #1e96c8 100%);
+  box-shadow: 0 0 16px rgba(55, 174, 226, 0.34);
+}
+
+.widget-telegram-link__icon::before {
+  content: "";
+  width: 0.82rem;
+  height: 0.82rem;
+  background: currentColor;
+  clip-path: polygon(5% 49%, 92% 12%, 72% 88%, 46% 63%, 33% 78%, 34% 56%);
+  transform: translateX(-0.03rem);
+}
+
+.widget-telegram-link span:not(.widget-telegram-link__icon) {
+  color: rgba(255, 244, 235, 0.96);
+}
+
+.widget-contact-link {
+  border: 1px solid rgba(255, 106, 0, 0.42);
+  background: rgba(255, 106, 0, 0.12);
+  color: #ff8a2a;
+  box-shadow: inset 0 0 0 1px rgba(255, 244, 235, 0.04);
+}
+
+.widget-telegram-link:hover,
+.widget-contact-link:hover {
+  transform: translateY(-1px);
+  border-color: rgba(255, 244, 235, 0.72);
+  box-shadow: 0 16px 36px rgba(255, 106, 0, 0.2), 0 0 24px rgba(75, 0, 130, 0.2);
 }
 
 .comparison-section {
@@ -802,6 +897,32 @@ body {
 
 .cta-glow:hover {
   box-shadow: 0 0 0 1px rgba(255, 106, 0, 0.58), 0 20px 58px rgba(255, 106, 0, 0.32), 0 0 72px rgba(122, 32, 200, 0.42);
+}
+
+.hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3.75rem;
+  min-width: 12.5rem;
+  padding: 1.05rem 2.15rem;
+  font-size: 1.02rem;
+  line-height: 1.1;
+}
+
+.hero-cta--primary {
+  box-shadow: 0 24px 64px rgba(255, 106, 0, 0.28), 0 0 44px rgba(75, 0, 130, 0.26);
+}
+
+.hero-cta--secondary {
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: inset 0 0 0 1px rgba(255, 244, 235, 0.04), 0 14px 38px rgba(0, 0, 0, 0.18);
+}
+
+.hero-cta--secondary:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 106, 0, 0.08);
+  box-shadow: 0 18px 48px rgba(255, 106, 0, 0.14), 0 0 32px rgba(75, 0, 130, 0.14);
 }
 
 .widget-pulse {

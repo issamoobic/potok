@@ -7,6 +7,7 @@ const LOOKAHEAD_DAYS = 14;
 const WORK_START_HOUR = 9;
 const WORK_END_HOUR = 18;
 const MSK_OFFSET_MINUTES = 180;
+const CALDAV_ORIGIN = 'https://caldav.yandex.ru';
 
 const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
@@ -32,7 +33,35 @@ const formatCalDavUtc = (date: Date) =>
 
 const withTrailingSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
 
-const calendarUrls = () => {
+const decodeXml = (value: string) =>
+  value
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&apos;/g, "'");
+
+const absoluteCalDavUrl = (href: string) => {
+  const decoded = decodeXml(href.trim());
+  if (/^https?:\/\//i.test(decoded)) return withTrailingSlash(decoded);
+  return withTrailingSlash(`${CALDAV_ORIGIN}${decoded.startsWith('/') ? '' : '/'}${decoded}`);
+};
+
+const extractHrefs = (xml: string) =>
+  [...xml.matchAll(/<[^>]*href[^>]*>([^<]+)<\/[^>]*href>/gi)].map((match) => absoluteCalDavUrl(match[1]));
+
+const propfind = async (url: string, auth: string, body: string, depth = '0') =>
+  fetch(url, {
+    method: 'PROPFIND',
+    headers: {
+      Authorization: auth,
+      'Content-Type': 'application/xml; charset=utf-8',
+      Depth: depth,
+    },
+    body,
+  });
+
+const discoverCalendarUrls = async (auth: string) => {
   const configuredUrl = getEnv('YANDEX_CALDAV_URL');
   if (configuredUrl) return [withTrailingSlash(configuredUrl)];
 
@@ -40,9 +69,47 @@ const calendarUrls = () => {
   const login = user.includes('@') ? user.split('@')[0] : user;
   const candidates = [user, login].filter(Boolean);
 
-  return [...new Set(candidates)].map((candidate) =>
+  const fallbackUrls = [...new Set(candidates)].map((candidate) =>
     `https://caldav.yandex.ru/calendars/${encodeURIComponent(candidate)}/events-default/`,
   );
+
+  const principalBody = `<?xml version="1.0" encoding="utf-8" ?>
+<D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <D:prop>
+    <C:calendar-home-set />
+  </D:prop>
+</D:propfind>`;
+
+  const calendarBody = `<?xml version="1.0" encoding="utf-8" ?>
+<D:propfind xmlns:D="DAV:" xmlns:C="urn:ietf:params:xml:ns:caldav">
+  <D:prop>
+    <D:resourcetype />
+    <D:displayname />
+  </D:prop>
+</D:propfind>`;
+
+  const discovered: string[] = [];
+  for (const candidate of candidates) {
+    const principalUrl = `${CALDAV_ORIGIN}/principals/users/${encodeURIComponent(candidate)}/`;
+    const principal = await propfind(principalUrl, auth, principalBody);
+    if (!principal.ok) continue;
+
+    const homes = extractHrefs(await principal.text());
+    for (const home of homes) {
+      const calendars = await propfind(home, auth, calendarBody, '1');
+      if (!calendars.ok) continue;
+
+      const xml = await calendars.text();
+      const responses = xml.match(/<[^>]*response[^>]*>[\s\S]*?<\/[^>]*response>/gi) || [];
+      for (const response of responses) {
+        if (!/<[^>]*calendar(?:\s|\/|>)/i.test(response)) continue;
+        const [href] = extractHrefs(response);
+        if (href) discovered.push(href);
+      }
+    }
+  }
+
+  return [...new Set([...discovered, ...fallbackUrls])];
 };
 
 const authHeader = () => {
@@ -103,7 +170,7 @@ const loadBusyIntervals = async (start: Date, end: Date) => {
 
   const errors: string[] = [];
 
-  for (const url of calendarUrls()) {
+  for (const url of await discoverCalendarUrls(auth)) {
     const response = await fetch(url, {
       method: 'REPORT',
       headers: {
