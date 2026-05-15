@@ -71,7 +71,7 @@
         </p>
         <div id="slot-status" class="min-h-5 text-xs text-white/72">Загружаем слоты...</div>
         <div id="slot-list" class="grid grid-cols-1 gap-2"></div>
-        <button id="slot-confirm" class="w-full rounded-lg bg-paper px-4 py-3 text-sm font-semibold text-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45" disabled>
+        <button id="slot-confirm" class="hidden w-full rounded-lg bg-paper px-4 py-3 text-sm font-semibold text-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45" disabled>
           Забронировать демо
         </button>
         <button id="slot-back" class="w-full rounded-lg border border-paper/30 px-4 py-2.5 text-sm font-semibold text-paper transition hover:bg-paper/10">
@@ -207,11 +207,14 @@
 
     function showContactFallback(target) {
       target.innerHTML = contactFallback;
+      slotConfirm.classList.add('hidden');
+      slotList.innerHTML = '';
     }
 
     async function loadSlots() {
       selectedSlot = null;
       slotConfirm.disabled = true;
+      slotConfirm.classList.add('hidden');
       slotList.innerHTML = '';
       slotStatus.textContent = 'Загружаем слоты...';
 
@@ -226,6 +229,7 @@
 
         slotStatus.textContent = 'Выберите один из доступных слотов:';
         slotList.innerHTML = '';
+        slotConfirm.classList.remove('hidden');
 
         data.slots.forEach((slot) => {
           const button = document.createElement('button');
@@ -307,7 +311,6 @@
 
         if (!response.ok) {
           showContactFallback(slotStatus);
-          slotConfirm.disabled = false;
           return;
         }
 

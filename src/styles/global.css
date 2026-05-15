@@ -148,6 +148,39 @@ body {
   box-shadow: 0 24px 70px rgba(75, 0, 130, 0.18);
 }
 
+.contact-telegram-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-height: 2.75rem;
+  margin-top: 0.45rem;
+  padding: 0.7rem 1rem;
+  border: 1px solid rgba(75, 0, 130, 0.3);
+  border-radius: 999px;
+  color: var(--ks-orange);
+  background:
+    linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.9)),
+    radial-gradient(circle at 85% 10%, rgba(255, 106, 0, 0.28), transparent 7rem);
+  box-shadow: 0 18px 44px rgba(75, 0, 130, 0.18), 0 0 28px rgba(75, 0, 130, 0.1);
+  font-weight: 800;
+  transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease);
+}
+
+.contact-telegram-button span {
+  color: rgba(255, 244, 235, 0.9);
+}
+
+.contact-telegram-button strong {
+  color: var(--ks-orange);
+  font-weight: 900;
+}
+
+.contact-telegram-button:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 106, 0, 0.5);
+  box-shadow: 0 24px 58px rgba(75, 0, 130, 0.24), 0 0 36px rgba(255, 106, 0, 0.16);
+}
+
 .comparison-section {
   position: relative;
   overflow: hidden;
