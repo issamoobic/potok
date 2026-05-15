@@ -11,9 +11,9 @@
         Разберём вашу воронку, подберём агента и покажем, как встроить автоматизацию в текущие процессы.
       </p>
       <div class="text-sm text-ink/70 space-y-2">
-        <div>Email: hello@potok.ai</div>
-        <div>Телефон: +7 (999) 000-00-00</div>
-        <div>Telegram: @potok_ai</div>
+        <div>Email: kropotsystems@yandex.ru</div>
+        <div>Телефон: +7 920 355-57-87</div>
+        <div>Telegram: @kropotsystems</div>
       </div>
     </div>
 
@@ -24,7 +24,7 @@
       </div>
       <div>
         <label class="text-sm text-ink/68">Телефон или email</label>
-        <input name="contact" required class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition" />
+        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="+7 920 355-57-87 или name@company.ru" class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition placeholder:text-ink/45" />
       </div>
       <div>
         <label class="text-sm text-ink/68">Задача</label>
@@ -58,13 +58,24 @@
 <script>
   const form = document.getElementById('lead-form') as HTMLFormElement;
   const status = document.getElementById('form-status')!;
+  const validateContact = (value: string) => {
+    const contact = value.trim();
+    const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
+    const digits = contact.replace(/\D/g, '');
+    const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
+    const sameDigits = /^(\d)\1+$/.test(digits);
+    const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+
+    return email.test(contact) || phone || telegram;
+  };
   const contactFallback = `
     <div class="space-y-3">
       <div class="font-semibold text-ink">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
       <div class="flex flex-wrap justify-center gap-2">
-        <a href="https://t.me/potok_ai" target="_blank" rel="noopener" class="inline-flex min-h-10 items-center rounded-full bg-ink px-4 text-sm font-semibold text-paper">Telegram</a>
-        <a href="mailto:hello@potok.ai" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Email</a>
-        <a href="tel:+79990000000" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Позвонить</a>
+        <a href="https://t.me/kropotsystems" target="_blank" rel="noopener" class="inline-flex min-h-10 items-center rounded-full bg-ink px-4 text-sm font-semibold text-paper">Telegram</a>
+        <a href="mailto:kropotsystems@yandex.ru" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Email</a>
+        <a href="tel:+79203555787" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Позвонить</a>
       </div>
     </div>
   `;
@@ -73,6 +84,13 @@
     e.preventDefault();
     status.textContent = 'Отправляем...';
     const data = Object.fromEntries(new FormData(form));
+    const contact = String(data.contact || '');
+
+    if (!validateContact(contact)) {
+      status.textContent = 'Укажите корректный телефон, email или Telegram.';
+      return;
+    }
+
     try {
       const r = await fetch('/api/lead', {
         method: 'POST',

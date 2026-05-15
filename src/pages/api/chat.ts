@@ -72,7 +72,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     return new Response(JSON.stringify({
-      reply: 'Извините, технические неполадки. Напишите hello@potok.ai или в Telegram @potok_ai — ответим лично.',
+      reply: 'Извините, технические неполадки. Напишите kropotsystems@yandex.ru или в Telegram @kropotsystems — ответим лично.',
     }), { status: 200 });
   } catch (e) {
     console.error(e);

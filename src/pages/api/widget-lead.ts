@@ -21,6 +21,25 @@ const goalLabels: Record<string, string> = {
 
 const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
+const validateContact = (value: string) => {
+  const contact = value.trim();
+  const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+  const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
+  const digits = contact.replace(/\D/g, '');
+  const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
+  const sameDigits = /^(\d)\1+$/.test(digits);
+  const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+
+  if (email.test(contact)) return { ok: true, type: 'email' };
+  if (phone) return { ok: true, type: 'phone' };
+  if (telegram.test(contact)) return { ok: true, type: 'telegram' };
+
+  return {
+    ok: false,
+    error: 'Укажите корректный телефон, email или Telegram',
+  };
+};
+
 const sendTelegramMessage = async (text: string) => {
   const tgToken = getEnv('TELEGRAM_BOT_TOKEN');
   const tgChat = getEnv('TELEGRAM_CHAT_ID');
@@ -81,11 +100,17 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Укажите имя и контакт' }), { status: 400 });
     }
 
+    const contactValidation = validateContact(contact);
+    if (!contactValidation.ok) {
+      return new Response(JSON.stringify({ error: contactValidation.error }), { status: 400 });
+    }
+
     const text = [
       '🔥 Новая заявка из виджета KROPOT SYSTEMS',
       '',
       `Имя: ${name}`,
       `Контакт: ${contact}`,
+      `Тип контакта: ${contactValidation.type}`,
       `Продукт: ${productLabels[product] || product}`,
       `Задача: ${goalLabels[goal] || goal}`,
       `Комментарий: ${comment || '—'}`,

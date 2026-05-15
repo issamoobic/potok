@@ -21,7 +21,6 @@
     <div class="px-5 py-4 border-b border-white/10 flex justify-between items-start gap-4">
       <div>
         <div class="font-semibold leading-tight text-paper">Покажем, где ИИ сэкономит время</div>
-        <div class="text-xs text-white/58 mt-1">Подберём демо под ваш бизнес</div>
       </div>
       <button id="ai-close" class="text-white/50 hover:text-paper text-xl leading-none" aria-label="Закрыть">×</button>
     </div>
@@ -58,7 +57,7 @@
           Отлично. Оставьте контакт — запишем на демо и покажем, как это может работать в вашем процессе.
         </p>
         <input name="name" required placeholder="Имя" class="widget-input" />
-        <input name="contact" required placeholder="Телефон или Telegram" class="widget-input" />
+        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="Телефон, email или Telegram" class="widget-input" />
         <textarea name="comment" rows="2" placeholder="Комментарий, если нужно" class="widget-input resize-none"></textarea>
         <button class="w-full bg-paper text-ink rounded-lg px-4 py-3 text-sm font-semibold hover:opacity-90 transition">
           Записаться на демо
@@ -66,10 +65,24 @@
         <div id="widget-status" class="min-h-5 text-xs opacity-80"></div>
       </form>
 
+      <div id="step-slot" class="hidden space-y-4">
+        <p class="text-sm leading-relaxed">
+          Выберите удобное время для демо. Показываем ближайшие свободные слоты из календаря.
+        </p>
+        <div id="slot-status" class="min-h-5 text-xs text-white/72">Загружаем слоты...</div>
+        <div id="slot-list" class="grid grid-cols-1 gap-2"></div>
+        <button id="slot-confirm" class="w-full rounded-lg bg-paper px-4 py-3 text-sm font-semibold text-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45" disabled>
+          Забронировать демо
+        </button>
+        <button id="slot-back" class="w-full rounded-lg border border-paper/30 px-4 py-2.5 text-sm font-semibold text-paper transition hover:bg-paper/10">
+          Изменить контакт
+        </button>
+      </div>
+
       <div id="widget-success" class="hidden space-y-3">
-        <div class="text-lg font-semibold">Заявка отправлена</div>
+        <div class="text-lg font-semibold">Демо забронировано</div>
         <p class="text-sm leading-relaxed opacity-90">
-          Спасибо! Свяжемся и покажем демо продуктов под вашу задачу.
+          Спасибо! Слот закреплён в календаре, а мы свяжемся с вами перед встречей.
         </p>
       </div>
     </div>
@@ -116,6 +129,26 @@
     border-color: #FF6A00;
     box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.25);
   }
+
+  .slot-btn {
+    width: 100%;
+    border: 1px solid rgba(255, 106, 0, 0.28);
+    border-radius: 10px;
+    padding: 10px 12px;
+    color: rgba(255, 244, 235, 0.86);
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    background: rgba(255, 255, 255, 0.04);
+    transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
+  }
+
+  .slot-btn:hover,
+  .slot-btn.is-selected {
+    border-color: rgba(255, 106, 0, 0.78);
+    color: #FF8A2A;
+    background: rgba(255, 106, 0, 0.14);
+  }
 </style>
 
 <script is:inline>
@@ -127,20 +160,36 @@
     const startStep = document.getElementById('step-start');
     const goalStep = document.getElementById('step-goal');
     const widgetForm = document.getElementById('widget-form');
+    const slotStep = document.getElementById('step-slot');
+    const slotList = document.getElementById('slot-list');
+    const slotStatus = document.getElementById('slot-status');
+    const slotConfirm = document.getElementById('slot-confirm');
+    const slotBack = document.getElementById('slot-back');
     const successStep = document.getElementById('widget-success');
     const status = document.getElementById('widget-status');
+    const validateContact = (value) => {
+      const contact = value.trim();
+      const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+      const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
+      const digits = contact.replace(/\D/g, '');
+      const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
+      const sameDigits = /^(\d)\1+$/.test(digits);
+      const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+
+      return email.test(contact) || phone || telegram;
+    };
     const contactFallback = `
       <div class="space-y-3">
         <div class="text-xs leading-relaxed text-white/78">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
         <div class="grid grid-cols-1 gap-2">
-          <a href="https://t.me/potok_ai" target="_blank" rel="noopener" class="rounded-lg bg-paper px-3 py-2 text-center text-xs font-semibold text-ink">Telegram</a>
-          <a href="mailto:hello@potok.ai" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Email</a>
-          <a href="tel:+79990000000" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Позвонить</a>
+          <a href="https://t.me/kropotsystems" target="_blank" rel="noopener" class="rounded-lg bg-paper px-3 py-2 text-center text-xs font-semibold text-ink">Telegram</a>
+          <a href="mailto:kropotsystems@yandex.ru" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Email</a>
+          <a href="tel:+79203555787" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Позвонить</a>
         </div>
       </div>
     `;
 
-    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !status) {
+    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !slotStep || !slotList || !slotStatus || !slotConfirm || !slotBack || !successStep || !status) {
       return;
     }
 
@@ -148,10 +197,52 @@
       product: 'demo',
       goal: 'integration',
     };
+    let pendingFormData = null;
+    let selectedSlot = null;
 
     function showOnly(step) {
-      [startStep, goalStep, widgetForm, successStep].forEach((el) => el.classList.add('hidden'));
+      [startStep, goalStep, widgetForm, slotStep, successStep].forEach((el) => el.classList.add('hidden'));
       step.classList.remove('hidden');
+    }
+
+    function showContactFallback(target) {
+      target.innerHTML = contactFallback;
+    }
+
+    async function loadSlots() {
+      selectedSlot = null;
+      slotConfirm.disabled = true;
+      slotList.innerHTML = '';
+      slotStatus.textContent = 'Загружаем слоты...';
+
+      try {
+        const response = await fetch('/api/demo-slots');
+        const data = await response.json().catch(() => ({}));
+
+        if (!response.ok || !data.slots?.length) {
+          showContactFallback(slotStatus);
+          return;
+        }
+
+        slotStatus.textContent = 'Выберите один из доступных слотов:';
+        slotList.innerHTML = '';
+
+        data.slots.forEach((slot) => {
+          const button = document.createElement('button');
+          button.type = 'button';
+          button.className = 'slot-btn';
+          button.textContent = `${slot.label} МСК`;
+          button.addEventListener('click', () => {
+            selectedSlot = slot;
+            slotList.querySelectorAll('.slot-btn').forEach((item) => item.classList.remove('is-selected'));
+            button.classList.add('is-selected');
+            slotConfirm.disabled = false;
+          });
+          slotList.append(button);
+        });
+      } catch {
+        showContactFallback(slotStatus);
+      }
     }
 
     function openPanel() {
@@ -186,22 +277,45 @@
       status.textContent = 'Отправляем...';
       const formData = Object.fromEntries(new FormData(widgetForm));
 
+      if (!validateContact(String(formData.contact || ''))) {
+        status.textContent = 'Укажите корректный телефон, email или Telegram.';
+        return;
+      }
+
+      pendingFormData = formData;
+      status.textContent = '';
+      showOnly(slotStep);
+      await loadSlots();
+    });
+
+    slotBack.addEventListener('click', () => {
+      showOnly(widgetForm);
+    });
+
+    slotConfirm.addEventListener('click', async () => {
+      if (!pendingFormData || !selectedSlot) return;
+
+      slotConfirm.disabled = true;
+      slotStatus.textContent = 'Бронируем слот...';
+
       try {
-        const response = await fetch('/api/widget-lead', {
+        const response = await fetch('/api/demo-booking', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...formData, ...state }),
+          body: JSON.stringify({ ...pendingFormData, ...state, slotStart: selectedSlot.start }),
         });
 
         if (!response.ok) {
-          status.innerHTML = contactFallback;
+          showContactFallback(slotStatus);
+          slotConfirm.disabled = false;
           return;
         }
 
         widgetForm.reset();
         showOnly(successStep);
       } catch {
-        status.innerHTML = contactFallback;
+        showContactFallback(slotStatus);
+        slotConfirm.disabled = false;
       }
     });
 
