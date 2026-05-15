@@ -31,9 +31,19 @@ const formatMoscow = (date: Date) => {
   return `${pad(moscow.getUTCDate())}.${pad(moscow.getUTCMonth() + 1)}.${moscow.getUTCFullYear()} ${pad(moscow.getUTCHours())}:${pad(moscow.getUTCMinutes())} МСК`;
 };
 
-const calendarUrl = () => {
+const withTrailingSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
+
+const calendarUrls = () => {
+  const configuredUrl = getEnv('YANDEX_CALDAV_URL');
+  if (configuredUrl) return [withTrailingSlash(configuredUrl)];
+
   const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
-  return getEnv('YANDEX_CALDAV_URL') || `https://caldav.yandex.ru/calendars/${encodeURIComponent(user)}/events-default/`;
+  const login = user.includes('@') ? user.split('@')[0] : user;
+  const candidates = [user, login].filter(Boolean);
+
+  return [...new Set(candidates)].map((candidate) =>
+    `https://caldav.yandex.ru/calendars/${encodeURIComponent(candidate)}/events-default/`,
+  );
 };
 
 const authHeader = () => {
@@ -104,20 +114,26 @@ const createCalendarEvent = async (data: {
     'END:VCALENDAR',
   ].join('\r\n');
 
-  const response = await fetch(`${calendarUrl()}${uid}.ics`, {
-    method: 'PUT',
-    headers: {
-      Authorization: auth,
-      'Content-Type': 'text/calendar; charset=utf-8',
-    },
-    body: ics,
-  });
+  const errors: string[] = [];
 
-  if (!response.ok) {
-    return { ok: false, status: 502, error: `Yandex Calendar вернул ${response.status}` };
+  for (const url of calendarUrls()) {
+    const response = await fetch(`${url}${uid}.ics`, {
+      method: 'PUT',
+      headers: {
+        Authorization: auth,
+        'Content-Type': 'text/calendar; charset=utf-8',
+      },
+      body: ics,
+    });
+
+    if (response.ok) {
+      return { ok: true, uid };
+    }
+
+    errors.push(`${response.status}`);
   }
 
-  return { ok: true, uid };
+  return { ok: false, status: 502, error: `Yandex Calendar вернул ${errors.join('/')}` };
 };
 
 export const POST: APIRoute = async ({ request }) => {

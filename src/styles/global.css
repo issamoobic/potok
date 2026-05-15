@@ -119,6 +119,18 @@ body {
   color: var(--ks-orange);
 }
 
+#site-nav.logo-on-warm .telegram-button {
+  color: var(--ks-orange);
+}
+
+#site-nav.logo-on-warm .telegram-button span:not(.telegram-button__icon) {
+  color: rgba(255, 244, 235, 0.92);
+}
+
+#site-nav.logo-on-warm .telegram-button__icon {
+  color: #fff;
+}
+
 .premium-card {
   position: relative;
   border: 1px solid var(--ks-line);
@@ -148,12 +160,12 @@ body {
   box-shadow: 0 24px 70px rgba(75, 0, 130, 0.18);
 }
 
-.contact-telegram-button {
+.telegram-button {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.55rem;
   min-height: 2.75rem;
-  margin-top: 0.45rem;
   padding: 0.7rem 1rem;
   border: 1px solid rgba(75, 0, 130, 0.3);
   border-radius: 999px;
@@ -166,19 +178,66 @@ body {
   transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease);
 }
 
-.contact-telegram-button span {
+.telegram-button__icon {
+  display: grid;
+  place-items: center;
+  width: 1.55rem;
+  height: 1.55rem;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(180deg, #37aee2 0%, #1e96c8 100%);
+  box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.16), 0 0 18px rgba(55, 174, 226, 0.28);
+}
+
+.telegram-button__icon::before {
+  content: "";
+  width: 0.9rem;
+  height: 0.9rem;
+  background: currentColor;
+  clip-path: polygon(5% 49%, 92% 12%, 72% 88%, 46% 63%, 33% 78%, 34% 56%);
+  transform: translateX(-0.04rem);
+}
+
+.telegram-button span:not(.telegram-button__icon) {
   color: rgba(255, 244, 235, 0.9);
 }
 
-.contact-telegram-button strong {
+.telegram-button strong {
   color: var(--ks-orange);
   font-weight: 900;
 }
 
-.contact-telegram-button:hover {
+.telegram-button:hover {
   transform: translateY(-2px);
   border-color: rgba(255, 106, 0, 0.5);
   box-shadow: 0 24px 58px rgba(75, 0, 130, 0.24), 0 0 36px rgba(255, 106, 0, 0.16);
+}
+
+.telegram-button--contact {
+  margin-top: 0.45rem;
+}
+
+.telegram-button--nav {
+  min-height: 2.5rem;
+  padding: 0.52rem 0.82rem;
+  font-size: 0.78rem;
+  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.22), 0 0 24px rgba(255, 106, 0, 0.12);
+}
+
+.telegram-button--nav .telegram-button__icon {
+  width: 1.42rem;
+  height: 1.42rem;
+}
+
+@media (max-width: 767px) {
+  .telegram-button--nav {
+    padding: 0.5rem 0.68rem;
+  }
+
+  .telegram-button--nav strong {
+    display: none;
+  }
 }
 
 .comparison-section {

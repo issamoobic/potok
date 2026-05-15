@@ -149,6 +149,44 @@
     color: #FF8A2A;
     background: rgba(255, 106, 0, 0.14);
   }
+
+  .widget-telegram-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    min-height: 2.25rem;
+    border-radius: 0.65rem;
+    background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(108, 18, 168, 0.92));
+    color: #FF6A00;
+    font-size: 0.78rem;
+    font-weight: 850;
+    box-shadow: 0 14px 34px rgba(75, 0, 130, 0.28), 0 0 24px rgba(255, 106, 0, 0.14);
+  }
+
+  .widget-telegram-link__icon {
+    display: grid;
+    place-items: center;
+    width: 1.32rem;
+    height: 1.32rem;
+    border-radius: 999px;
+    color: #fff;
+    background: linear-gradient(180deg, #37aee2 0%, #1e96c8 100%);
+  }
+
+  .widget-telegram-link__icon::before {
+    content: "";
+    width: 0.78rem;
+    height: 0.78rem;
+    background: currentColor;
+    clip-path: polygon(5% 49%, 92% 12%, 72% 88%, 46% 63%, 33% 78%, 34% 56%);
+    transform: translateX(-0.03rem);
+  }
+
+  .widget-telegram-link span:not(.widget-telegram-link__icon) {
+    color: rgba(255, 244, 235, 0.94);
+  }
 </style>
 
 <script is:inline>
@@ -182,7 +220,11 @@
       <div class="space-y-3">
         <div class="text-xs leading-relaxed text-white/78">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
         <div class="grid grid-cols-1 gap-2">
-          <a href="https://t.me/kropotsystems" target="_blank" rel="noopener" class="rounded-lg bg-paper px-3 py-2 text-center text-xs font-semibold text-ink">Telegram</a>
+          <a href="https://t.me/kropotsystems" target="_blank" rel="noopener" class="widget-telegram-link" aria-label="Telegram KROPOT SYSTEMS">
+            <span class="widget-telegram-link__icon" aria-hidden="true"></span>
+            <span>Telegram</span>
+            <strong>@kropotsystems</strong>
+          </a>
           <a href="mailto:kropotsystems@yandex.ru" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Email</a>
           <a href="tel:+79203555787" class="rounded-lg border border-paper/30 px-3 py-2 text-center text-xs font-semibold text-paper">Позвонить</a>
         </div>

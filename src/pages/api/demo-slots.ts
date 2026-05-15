@@ -4,7 +4,7 @@ export const prerender = false;
 
 const SLOT_MINUTES = 45;
 const LOOKAHEAD_DAYS = 14;
-const WORK_START_HOUR = 10;
+const WORK_START_HOUR = 9;
 const WORK_END_HOUR = 18;
 const MSK_OFFSET_MINUTES = 180;
 
@@ -30,9 +30,19 @@ const fromMoscow = (year: number, month: number, day: number, hour: number, minu
 const formatCalDavUtc = (date: Date) =>
   `${date.getUTCFullYear()}${pad(date.getUTCMonth() + 1)}${pad(date.getUTCDate())}T${pad(date.getUTCHours())}${pad(date.getUTCMinutes())}${pad(date.getUTCSeconds())}Z`;
 
-const calendarUrl = () => {
+const withTrailingSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
+
+const calendarUrls = () => {
+  const configuredUrl = getEnv('YANDEX_CALDAV_URL');
+  if (configuredUrl) return [withTrailingSlash(configuredUrl)];
+
   const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
-  return getEnv('YANDEX_CALDAV_URL') || `https://caldav.yandex.ru/calendars/${encodeURIComponent(user)}/events-default/`;
+  const login = user.includes('@') ? user.split('@')[0] : user;
+  const candidates = [user, login].filter(Boolean);
+
+  return [...new Set(candidates)].map((candidate) =>
+    `https://caldav.yandex.ru/calendars/${encodeURIComponent(candidate)}/events-default/`,
+  );
 };
 
 const authHeader = () => {
@@ -91,21 +101,27 @@ const loadBusyIntervals = async (start: Date, end: Date) => {
   </C:filter>
 </C:calendar-query>`;
 
-  const response = await fetch(calendarUrl(), {
-    method: 'REPORT',
-    headers: {
-      Authorization: auth,
-      'Content-Type': 'application/xml; charset=utf-8',
-      Depth: '1',
-    },
-    body,
-  });
+  const errors: string[] = [];
 
-  if (!response.ok) {
-    return { ok: false as const, error: `Yandex Calendar вернул ${response.status}` };
+  for (const url of calendarUrls()) {
+    const response = await fetch(url, {
+      method: 'REPORT',
+      headers: {
+        Authorization: auth,
+        'Content-Type': 'application/xml; charset=utf-8',
+        Depth: '1',
+      },
+      body,
+    });
+
+    if (response.ok) {
+      return { ok: true as const, busy: parseBusyIntervals(await response.text()) };
+    }
+
+    errors.push(`${response.status}`);
   }
 
-  return { ok: true as const, busy: parseBusyIntervals(await response.text()) };
+  return { ok: false as const, error: `Yandex Calendar вернул ${errors.join('/')}` };
 };
 
 const overlaps = (start: Date, end: Date, busy: Array<{ start: Date; end: Date }>) =>
