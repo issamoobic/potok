@@ -19,12 +19,44 @@ const { title = 'KROPOT SYSTEMS — ИИ-агенты для бизнеса', de
     <slot />
     <script>
       // Smooth scroll для якорей
-      document.querySelectorAll('a[href^="#"]').forEach(a => {
-        a.addEventListener('click', e => {
-          const id = a.getAttribute('href');
-          if (id && id.length > 1) {
-            e.preventDefault();
-            document.querySelector(id)?.scrollIntoView({ behavior: 'smooth' });
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      const scrollToTarget = (target) => {
+        const navOffset = 86;
+        const start = window.scrollY;
+        const top = target.getBoundingClientRect().top + start - navOffset;
+        const distance = top - start;
+        const duration = Math.min(420, Math.max(220, Math.abs(distance) * 0.18));
+        const startedAt = performance.now();
+
+        if (reduceMotion) {
+          window.scrollTo(0, top);
+          return;
+        }
+
+        const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
+
+        const step = (now) => {
+          const progress = Math.min(1, (now - startedAt) / duration);
+          window.scrollTo(0, start + distance * easeOutCubic(progress));
+
+          if (progress < 1) {
+            requestAnimationFrame(step);
+          }
+        };
+
+        requestAnimationFrame(step);
+      };
+
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', (event) => {
+          const id = anchor.getAttribute('href');
+          const target = id && id.length > 1 ? document.querySelector(id) : null;
+
+          if (target) {
+            event.preventDefault();
+            history.pushState(null, '', id);
+            scrollToTarget(target);
           }
         });
       });

@@ -1,0 +1,109 @@
+---
+const highlights = [
+  { value: '7,2x', label: 'дешевле квалифицированный лид' },
+  { value: '124x', label: 'быстрее обработка базы' },
+  { value: '2,2x', label: 'больше квалифицированных лидов' },
+];
+
+const rows = [
+  {
+    label: 'Время работы',
+    callCenter: '8-12 часов, смены',
+    bot: '24/7/365',
+  },
+  {
+    label: 'Ответ клиенту',
+    callCenter: '30 секунд - 10+ минут',
+    bot: 'примерно 1 секунда',
+  },
+  {
+    label: 'Масштаб',
+    callCenter: '1 оператор = 1 звонок',
+    bot: 'тысячи звонков одновременно',
+  },
+  {
+    label: 'Стоимость минуты',
+    callCenter: '16-20 ₽',
+    bot: '4-9 ₽',
+  },
+  {
+    label: 'Данные в CRM',
+    callCenter: 'ручной ввод и ошибки',
+    bot: 'автоматически и структурно',
+  },
+];
+
+const financeRows = [
+  { label: 'Квалифицированные лиды', callCenter: '9 161', bot: '20 346' },
+  { label: 'Стоимость лида', callCenter: '267 ₽', bot: '37 ₽' },
+  { label: 'Конверсия', callCenter: '2,3%', bot: '5,1%' },
+  { label: 'Время обработки', callCenter: '2 756 часов', bot: '22,2 часа' },
+];
+---
+<section id="call-center-comparison" class="section-dark comparison-section" data-logo-theme="dark">
+  <div class="section-shell">
+    <div class="comparison-hero comparison-hero--simple">
+      <div>
+        <div class="eyebrow mb-4">Сравнение с колл-центром</div>
+        <h2 class="text-4xl md:text-6xl font-bold tracking-tight max-w-4xl">
+          Голосовой бот забирает рутину у операторов и снижает стоимость звонков.
+        </h2>
+      </div>
+      <p class="comparison-lead">
+        Не заменяем людей полностью: бот закрывает 80-90% типовых обращений, а операторы занимаются сложными кейсами, переговорами и VIP-клиентами.
+      </p>
+    </div>
+
+    <div class="comparison-simple-stats">
+      {highlights.map((item) => (
+        <div class="comparison-simple-stat">
+          <strong>{item.value}</strong>
+          <span>{item.label}</span>
+        </div>
+      ))}
+    </div>
+
+    <div class="comparison-simple-grid">
+      <div class="comparison-card comparison-card--simple">
+        <div class="comparison-card__label">На 400 000 звонков</div>
+        <div class="comparison-simple-table">
+          <div class="comparison-simple-table__head">
+            <span>Показатель</span>
+            <span>Колл-центр</span>
+            <span>Голосовой бот</span>
+          </div>
+          {financeRows.map((row) => (
+            <div class="comparison-simple-table__row">
+              <b>{row.label}</b>
+              <span>{row.callCenter}</span>
+              <strong>{row.bot}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="comparison-card comparison-card--simple">
+        <div class="comparison-card__label">По операционным метрикам</div>
+        <div class="comparison-simple-table">
+          <div class="comparison-simple-table__head">
+            <span>Метрика</span>
+            <span>Колл-центр</span>
+            <span>Голосовой бот</span>
+          </div>
+          {rows.map((row) => (
+            <div class="comparison-simple-table__row">
+              <b>{row.label}</b>
+              <span>{row.callCenter}</span>
+              <strong>{row.bot}</strong>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+
+    <div class="comparison-simple-note">
+      <b>Лучший сценарий - гибридный.</b>
+      <span>Голосовой бот берет FAQ, запись, напоминания, холодный обзвон, NPS и подтверждение заказов. Операторы остаются на эскалациях, сложных продажах и персональном сервисе.</span>
+    </div>
+  </div>
+</section>

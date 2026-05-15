@@ -1,0 +1,14 @@
+---
+interface Props {
+  href: string;
+  theme?: 'dark' | 'warm';
+}
+
+const { href, theme = 'dark' } = Astro.props;
+---
+<div class:list={['section-next', theme === 'warm' ? 'section-next--warm' : 'section-next--dark']}>
+  <a href={href} class="section-next__button" aria-label="Перейти к следующему разделу">
+    Ниже
+    <span aria-hidden="true">↓</span>
+  </a>
+</div>

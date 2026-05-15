@@ -2,6 +2,7 @@
 import Base from '../layouts/Base.astro';
 import Nav from '../components/Nav.astro';
 import Hero from '../components/Hero.astro';
+import CallCenterComparison from '../components/CallCenterComparison.astro';
 import Problems from '../components/Problems.astro';
 import Products from '../components/Products.astro';
 import Cases from '../components/Cases.astro';
@@ -10,15 +11,24 @@ import Faq from '../components/Faq.astro';
 import Contact from '../components/Contact.astro';
 import Footer from '../components/Footer.astro';
 import AiWidget from '../components/AiWidget.astro';
+import SectionNext from '../components/SectionNext.astro';
 ---
 <Base>
   <Nav />
   <Hero />
+  <SectionNext href="#call-center-comparison" theme="dark" />
+  <CallCenterComparison />
+  <SectionNext href="#problems" theme="dark" />
   <Problems />
+  <SectionNext href="#products" theme="warm" />
   <Products />
+  <SectionNext href="#cases" theme="dark" />
   <Cases />
+  <SectionNext href="#process" theme="warm" />
   <Process />
+  <SectionNext href="#faq" theme="dark" />
   <Faq />
+  <SectionNext href="#contact" theme="dark" />
   <Contact />
   <Footer />
   <AiWidget />

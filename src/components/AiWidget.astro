@@ -10,8 +10,11 @@
       Подобрать решение
     </div>
   </button>
-  <button id="ai-toggle" class="widget-pulse w-16 h-16 rounded-full text-white shadow-2xl hover:scale-[1.04] transition flex items-center justify-center text-xl font-semibold border border-paper/35">
-    KS
+  <button id="ai-toggle" class="widget-pulse w-[4.75rem] h-[4.75rem] sm:w-20 sm:h-20 rounded-full text-white shadow-2xl hover:scale-[1.04] transition flex items-center justify-center border border-paper/35" aria-label="Открыть ИИ-ассистента">
+    <span class="ai-trigger-core" aria-hidden="true">
+      <span class="ai-trigger-orbit"></span>
+      <span class="ai-trigger-spark"></span>
+    </span>
   </button>
 
   <div id="ai-panel" class="hidden absolute bottom-20 right-0 w-[min(360px,calc(100vw-2.5rem))] bg-[#150823]/95 text-white border border-white/14 rounded-2xl shadow-2xl overflow-hidden flex flex-col backdrop-blur-xl" style="max-height: calc(100vh - 8rem);">

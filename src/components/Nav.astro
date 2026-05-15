@@ -2,7 +2,7 @@
 ---
 <nav id="site-nav" class="sticky top-0 z-40 border-b border-white/10 bg-[#12071c]/78 backdrop-blur-xl logo-on-dark">
 <div class="max-w-6xl mx-auto px-5 sm:px-6 py-4 flex justify-between items-center">
-  <a href="/" class="flex items-center gap-3 min-w-0" aria-label="KROPOT SYSTEMS">
+  <a href="#hero" class="flex items-center gap-3 min-w-0" aria-label="KROPOT SYSTEMS">
     <span class="brand-logo-mark h-10 sm:h-12 w-[190px] sm:w-[210px]" aria-hidden="true"></span>
     <span class="sr-only">KROPOT SYSTEMS</span>
   </a>
@@ -35,9 +35,20 @@
         setTheme(current?.dataset.logoTheme || 'dark');
       };
 
+      let isTicking = false;
+      const requestThemeUpdate = () => {
+        if (isTicking) return;
+
+        isTicking = true;
+        requestAnimationFrame(() => {
+          updateTheme();
+          isTicking = false;
+        });
+      };
+
       updateTheme();
-      window.addEventListener('scroll', updateTheme, { passive: true });
-      window.addEventListener('resize', updateTheme);
+      window.addEventListener('scroll', requestThemeUpdate, { passive: true });
+      window.addEventListener('resize', requestThemeUpdate);
     };
 
     if (document.readyState === 'loading') {
