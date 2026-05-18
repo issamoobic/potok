@@ -80,8 +80,8 @@
       </div>
 
       <div id="widget-success" class="hidden space-y-3">
-        <div class="text-lg font-semibold">Демо забронировано</div>
-        <p class="text-sm leading-relaxed opacity-90">
+        <div id="widget-success-title" class="text-lg font-semibold">Демо забронировано</div>
+        <p id="widget-success-text" class="text-sm leading-relaxed opacity-90">
           Спасибо! Слот закреплён в календаре, а мы свяжемся с вами перед встречей.
         </p>
       </div>
@@ -204,6 +204,8 @@
     const slotConfirm = document.getElementById('slot-confirm');
     const slotBack = document.getElementById('slot-back');
     const successStep = document.getElementById('widget-success');
+    const successTitle = document.getElementById('widget-success-title');
+    const successText = document.getElementById('widget-success-text');
     const status = document.getElementById('widget-status');
     const validateContact = (value) => {
       const contact = value.trim();
@@ -231,7 +233,7 @@
       </div>
     `;
 
-    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !slotStep || !slotList || !slotStatus || !slotConfirm || !slotBack || !successStep || !status) {
+    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !slotStep || !slotList || !slotStatus || !slotConfirm || !slotBack || !successStep || !successTitle || !successText || !status) {
       return;
     }
 
@@ -351,9 +353,19 @@
           body: JSON.stringify({ ...pendingFormData, ...state, slotStart: selectedSlot.start }),
         });
 
+        const data = await response.json().catch(() => ({}));
+
         if (!response.ok) {
           showContactFallback(slotStatus);
           return;
+        }
+
+        if (data.calendarBooked === false) {
+          successTitle.textContent = 'Заявка отправлена';
+          successText.textContent = 'Спасибо! Мы получили выбранное время и свяжемся с вами, чтобы подтвердить демо.';
+        } else {
+          successTitle.textContent = 'Демо забронировано';
+          successText.textContent = 'Спасибо! Слот закреплён в календаре, а мы свяжемся с вами перед встречей.';
         }
 
         widgetForm.reset();

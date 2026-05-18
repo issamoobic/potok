@@ -8,6 +8,12 @@ const CALDAV_ORIGIN = 'https://caldav.yandex.ru';
 
 const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
+const calDavUserCandidates = () => {
+  const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
+  const login = user.includes('@') ? user.split('@')[0] : user;
+  return [...new Set([user, login].filter(Boolean))];
+};
+
 const validateContact = (value: string) => {
   const contact = value.trim();
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
@@ -66,9 +72,7 @@ const discoverCalendarUrls = async (auth: string) => {
   const configuredUrl = getEnv('YANDEX_CALDAV_URL');
   if (configuredUrl) return [withTrailingSlash(configuredUrl)];
 
-  const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
-  const login = user.includes('@') ? user.split('@')[0] : user;
-  const candidates = [user, login].filter(Boolean);
+  const candidates = calDavUserCandidates();
 
   const fallbackUrls = [...new Set(candidates)].map((candidate) =>
     `https://caldav.yandex.ru/calendars/${encodeURIComponent(candidate)}/events-default/`,
@@ -113,12 +117,11 @@ const discoverCalendarUrls = async (auth: string) => {
   return [...new Set([...discovered, ...fallbackUrls])];
 };
 
-const authHeader = () => {
-  const user = getEnv('YANDEX_CALDAV_USER');
+const authHeaders = () => {
   const password = getEnv('YANDEX_CALDAV_PASSWORD');
 
-  if (!user || !password) return null;
-  return `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
+  if (!password) return [];
+  return calDavUserCandidates().map((user) => `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`);
 };
 
 const escapeIcs = (value: string) =>
@@ -132,13 +135,26 @@ const sendTelegramMessage = async (text: string) => {
   const tgToken = getEnv('TELEGRAM_BOT_TOKEN');
   const tgChat = getEnv('TELEGRAM_CHAT_ID');
 
-  if (!tgToken || !tgChat) return;
+  if (!tgToken || !tgChat) {
+    return { ok: false, status: 500, error: 'Telegram не настроен' };
+  }
 
-  await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ chat_id: tgChat, text, disable_web_page_preview: true }),
-  }).catch((error) => console.error('Telegram booking error:', error));
+  try {
+    const response = await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ chat_id: tgChat, text, disable_web_page_preview: true }),
+    });
+
+    if (!response.ok) {
+      return { ok: false, status: response.status, error: await response.text() };
+    }
+
+    return { ok: true };
+  } catch (error) {
+    console.error('Telegram booking error:', error);
+    return { ok: false, status: 502, error: 'Telegram не ответил' };
+  }
 };
 
 const createCalendarEvent = async (data: {
@@ -150,8 +166,8 @@ const createCalendarEvent = async (data: {
   start: Date;
   end: Date;
 }) => {
-  const auth = authHeader();
-  if (!auth) {
+  const authCandidates = authHeaders();
+  if (!authCandidates.length) {
     return { ok: false, status: 500, error: 'Yandex Calendar не настроен' };
   }
 
@@ -183,21 +199,23 @@ const createCalendarEvent = async (data: {
 
   const errors: string[] = [];
 
-  for (const url of await discoverCalendarUrls(auth)) {
-    const response = await fetch(`${url}${uid}.ics`, {
-      method: 'PUT',
-      headers: {
-        Authorization: auth,
-        'Content-Type': 'text/calendar; charset=utf-8',
-      },
-      body: ics,
-    });
+  for (const auth of authCandidates) {
+    for (const url of await discoverCalendarUrls(auth)) {
+      const response = await fetch(`${url}${uid}.ics`, {
+        method: 'PUT',
+        headers: {
+          Authorization: auth,
+          'Content-Type': 'text/calendar; charset=utf-8',
+        },
+        body: ics,
+      });
 
-    if (response.ok) {
-      return { ok: true, uid };
+      if (response.ok) {
+        return { ok: true, uid };
+      }
+
+      errors.push(`${response.status}`);
     }
-
-    errors.push(`${response.status}`);
   }
 
   return { ok: false, status: 502, error: `Yandex Calendar вернул ${errors.join('/')}` };
@@ -223,12 +241,8 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const booking = await createCalendarEvent({ name, contact, comment, product, goal, start: slotStart, end: slotEnd });
-    if (!booking.ok) {
-      return new Response(JSON.stringify({ error: booking.error }), { status: booking.status || 500 });
-    }
-
-    await sendTelegramMessage([
-      '🔥 Забронировано демо KROPOT SYSTEMS',
+    const telegram = await sendTelegramMessage([
+      booking.ok ? '🔥 Забронировано демо KROPOT SYSTEMS' : '🔥 Заявка на демо KROPOT SYSTEMS',
       '',
       `Время: ${formatMoscow(slotStart)}`,
       `Имя: ${name}`,
@@ -236,9 +250,19 @@ export const POST: APIRoute = async ({ request }) => {
       `Продукт: ${product}`,
       `Задача: ${goal}`,
       `Комментарий: ${comment || '—'}`,
+      booking.ok ? 'Календарь: слот создан' : `Календарь: не создался (${booking.error})`,
     ].join('\n'));
 
-    return new Response(JSON.stringify({ ok: true, slotLabel: formatMoscow(slotStart) }), { status: 200 });
+    if (!telegram.ok) {
+      console.error('Telegram booking lead error:', telegram.error);
+      return new Response(JSON.stringify({ error: telegram.error }), { status: telegram.status || 500 });
+    }
+
+    return new Response(JSON.stringify({
+      ok: true,
+      calendarBooked: booking.ok,
+      slotLabel: formatMoscow(slotStart),
+    }), { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ error: 'Не удалось забронировать демо' }), { status: 500 });

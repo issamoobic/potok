@@ -13,6 +13,12 @@ const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
 const pad = (value: number) => String(value).padStart(2, '0');
 
+const calDavUserCandidates = () => {
+  const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
+  const login = user.includes('@') ? user.split('@')[0] : user;
+  return [...new Set([user, login].filter(Boolean))];
+};
+
 const toMoscowParts = (date: Date) => {
   const moscow = new Date(date.getTime() + MSK_OFFSET_MINUTES * 60_000);
   return {
@@ -65,9 +71,7 @@ const discoverCalendarUrls = async (auth: string) => {
   const configuredUrl = getEnv('YANDEX_CALDAV_URL');
   if (configuredUrl) return [withTrailingSlash(configuredUrl)];
 
-  const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';
-  const login = user.includes('@') ? user.split('@')[0] : user;
-  const candidates = [user, login].filter(Boolean);
+  const candidates = calDavUserCandidates();
 
   const fallbackUrls = [...new Set(candidates)].map((candidate) =>
     `https://caldav.yandex.ru/calendars/${encodeURIComponent(candidate)}/events-default/`,
@@ -112,12 +116,11 @@ const discoverCalendarUrls = async (auth: string) => {
   return [...new Set([...discovered, ...fallbackUrls])];
 };
 
-const authHeader = () => {
-  const user = getEnv('YANDEX_CALDAV_USER');
+const authHeaders = () => {
   const password = getEnv('YANDEX_CALDAV_PASSWORD');
 
-  if (!user || !password) return null;
-  return `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`;
+  if (!password) return [];
+  return calDavUserCandidates().map((user) => `Basic ${Buffer.from(`${user}:${password}`).toString('base64')}`);
 };
 
 const parseDateValue = (value: string) => {
@@ -148,8 +151,8 @@ const parseBusyIntervals = (xml: string) => {
 };
 
 const loadBusyIntervals = async (start: Date, end: Date) => {
-  const auth = authHeader();
-  if (!auth) {
+  const authCandidates = authHeaders();
+  if (!authCandidates.length) {
     return { ok: false as const, error: 'Yandex Calendar не настроен' };
   }
 
@@ -170,22 +173,24 @@ const loadBusyIntervals = async (start: Date, end: Date) => {
 
   const errors: string[] = [];
 
-  for (const url of await discoverCalendarUrls(auth)) {
-    const response = await fetch(url, {
-      method: 'REPORT',
-      headers: {
-        Authorization: auth,
-        'Content-Type': 'application/xml; charset=utf-8',
-        Depth: '1',
-      },
-      body,
-    });
+  for (const auth of authCandidates) {
+    for (const url of await discoverCalendarUrls(auth)) {
+      const response = await fetch(url, {
+        method: 'REPORT',
+        headers: {
+          Authorization: auth,
+          'Content-Type': 'application/xml; charset=utf-8',
+          Depth: '1',
+        },
+        body,
+      });
 
-    if (response.ok) {
-      return { ok: true as const, busy: parseBusyIntervals(await response.text()) };
+      if (response.ok) {
+        return { ok: true as const, busy: parseBusyIntervals(await response.text()) };
+      }
+
+      errors.push(`${response.status}`);
     }
-
-    errors.push(`${response.status}`);
   }
 
   return { ok: false as const, error: `Yandex Calendar вернул ${errors.join('/')}` };
@@ -224,10 +229,15 @@ export const GET: APIRoute = async () => {
     const busy = await loadBusyIntervals(now, rangeEnd);
 
     if (!busy.ok) {
-      return new Response(JSON.stringify({ ok: false, error: busy.error, slots: [] }), { status: 503 });
+      console.error('Yandex Calendar slots fallback:', busy.error);
+      return new Response(JSON.stringify({
+        ok: true,
+        calendarConnected: false,
+        slots: createSlots([]),
+      }), { status: 200 });
     }
 
-    return new Response(JSON.stringify({ ok: true, slots: createSlots(busy.busy) }), { status: 200 });
+    return new Response(JSON.stringify({ ok: true, calendarConnected: true, slots: createSlots(busy.busy) }), { status: 200 });
   } catch (error) {
     console.error(error);
     return new Response(JSON.stringify({ ok: false, error: 'Не удалось загрузить слоты', slots: [] }), { status: 500 });
