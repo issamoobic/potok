@@ -1,8 +1,6 @@
 import type { APIRoute } from 'astro';
 import { saveLead } from '../../lib/lead-store';
-import { sendMail } from '../../lib/mailer';
 import { notifyLeadInMax } from '../../lib/max-notifier';
-import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
 
 export const prerender = false;
 
@@ -84,20 +82,9 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('Widget lead store error:', stored.error);
     }
 
-    const mail = await sendMail({
-      subject,
-      text,
-    });
-    if (!mail.ok) {
-      console.error('Email widget lead error:', mail.error);
-      if (!stored.ok) {
-        return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
-      }
+    if (!stored.ok) {
+      return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
     }
-
-    notifyLeadInTelegram('виджет сайта').then((notification) => {
-      if (!notification.ok) console.error('Telegram widget lead notification error:', notification.error);
-    });
 
     notifyLeadInMax({ source: 'виджет сайта', text }).then((notification) => {
       if (!notification.ok) console.error('MAX widget lead notification error:', notification.error);

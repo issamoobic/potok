@@ -1,8 +1,6 @@
 import type { APIRoute } from 'astro';
 import { saveLead } from '../../lib/lead-store';
-import { sendMail } from '../../lib/mailer';
 import { notifyLeadInMax } from '../../lib/max-notifier';
-import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
 import { getEnv } from '../../lib/env';
 
 export const prerender = false;
@@ -246,20 +244,9 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('Booking lead store error:', stored.error);
     }
 
-    const mail = await sendMail({
-      subject,
-      text: leadText,
-    });
-    if (!mail.ok) {
-      console.error('Email booking lead error:', mail.error);
-      if (!stored.ok) {
-        return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
-      }
+    if (!stored.ok) {
+      return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
     }
-
-    notifyLeadInTelegram('бронирование демо').then((notification) => {
-      if (!notification.ok) console.error('Telegram booking notification error:', notification.error);
-    });
 
     notifyLeadInMax({ source: 'бронирование демо', text: leadText }).then((notification) => {
       if (!notification.ok) console.error('MAX booking notification error:', notification.error);

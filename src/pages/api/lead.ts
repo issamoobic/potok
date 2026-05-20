@@ -1,9 +1,6 @@
 import type { APIRoute } from 'astro';
 import { saveLead } from '../../lib/lead-store';
-import { sendMail } from '../../lib/mailer';
 import { notifyLeadInMax } from '../../lib/max-notifier';
-import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
-import { getEnv } from '../../lib/env';
 
 export const prerender = false;
 
@@ -63,43 +60,13 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('Lead store error:', stored.error);
     }
 
-    const mail = await sendMail({
-      subject,
-      text,
-    });
-    if (!mail.ok) {
-      console.error('Email lead error:', mail.error);
-      if (!stored.ok) {
-        return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
-      }
+    if (!stored.ok) {
+      return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
     }
-
-    notifyLeadInTelegram('форма на сайте').then((notification) => {
-      if (!notification.ok) console.error('Telegram lead notification error:', notification.error);
-    });
 
     notifyLeadInMax({ source: 'форма на сайте', text }).then((notification) => {
       if (!notification.ok) console.error('MAX lead notification error:', notification.error);
     });
-
-    const bxUrl = getEnv('BITRIX_WEBHOOK_URL');
-    if (bxUrl) {
-      const isEmail = contact.includes('@');
-      fetch(`${bxUrl}crm.lead.add.json`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          fields: {
-            TITLE: `Заявка с сайта: ${name}`,
-            NAME: name,
-            COMMENTS: task || '',
-            SOURCE_ID: 'WEB',
-            [isEmail ? 'EMAIL' : 'PHONE']: [{ VALUE: contact, VALUE_TYPE: 'WORK' }],
-            UF_CRM_AD_CONSENT: data.consent_ad ? 'Y' : 'N',
-          },
-        }),
-      }).catch((error) => console.error('Bitrix lead error:', error));
-    }
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (error) {
