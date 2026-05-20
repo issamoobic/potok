@@ -57,6 +57,20 @@ const encodeHeader = (value: string) =>
 const dotStuff = (value: string) =>
   value.replace(/\r?\n/g, '\r\n').replace(/^\./gm, '..');
 
+const sanitizeMailText = (value: string) =>
+  value
+    .replace(/[\u{1F000}-\u{1FAFF}]/gu, '')
+    .replace(/[^\S\r\n]+/g, ' ')
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .join('\n')
+    .trim();
+
+const messageId = (from: string) => {
+  const domain = from.includes('@') ? from.split('@').at(-1) : 'kropotsystems.ru';
+  return `<${Date.now()}.${crypto.randomUUID()}@${domain}>`;
+};
+
 export const sendMail = async ({
   subject,
   text,
@@ -70,6 +84,7 @@ export const sendMail = async ({
   const from = getEnv('MAIL_FROM') || user;
   const host = getEnv('SMTP_HOST') || 'smtp.yandex.ru';
   const port = Number(getEnv('SMTP_PORT') || 465);
+  const cleanText = sanitizeMailText(text);
 
   if (!user || !password || !from || !to) {
     return { ok: true, skipped: true };
@@ -112,11 +127,13 @@ export const sendMail = async ({
       `From: ${encodeHeader('KROPOT SYSTEMS')} <${from}>`,
       `To: ${to}`,
       `Subject: ${encodeHeader(subject)}`,
+      `Date: ${new Date().toUTCString()}`,
+      `Message-ID: ${messageId(from)}`,
       'MIME-Version: 1.0',
       'Content-Type: text/plain; charset=UTF-8',
       'Content-Transfer-Encoding: 8bit',
       '',
-      dotStuff(text),
+      dotStuff(cleanText),
       '.',
     ].join('\r\n');
 
