@@ -1,4 +1,8 @@
 import type { APIRoute } from 'astro';
+import { saveLead } from '../../lib/lead-store';
+import { sendMail } from '../../lib/mailer';
+import { notifyLeadInMax } from '../../lib/max-notifier';
+import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
 
 export const prerender = false;
 
@@ -21,53 +25,6 @@ const validateContact = (value: string) => {
     ok: false,
     error: 'Укажите корректный телефон, email или Telegram',
   };
-};
-
-const sendTelegramMessage = async (text: string) => {
-  const tgToken = getEnv('TELEGRAM_BOT_TOKEN');
-  const tgChat = getEnv('TELEGRAM_CHAT_ID');
-
-  if (!tgToken || !tgChat) {
-    return { ok: false, status: 500, error: 'Telegram не настроен: проверьте TELEGRAM_BOT_TOKEN и TELEGRAM_CHAT_ID' };
-  }
-
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 10000);
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        chat_id: tgChat,
-        text,
-        disable_web_page_preview: true,
-      }),
-      signal: controller.signal,
-    });
-
-    const payload = await response.json().catch(() => null);
-
-    if (!response.ok) {
-      return {
-        ok: false,
-        status: 502,
-        error: payload?.description || 'Telegram не принял заявку',
-      };
-    }
-
-    return { ok: true };
-  } catch (error) {
-    return {
-      ok: false,
-      status: 502,
-      error: error instanceof Error && error.name === 'AbortError'
-        ? 'Telegram не ответил за 10 секунд'
-        : 'Не удалось подключиться к Telegram',
-    };
-  } finally {
-    clearTimeout(timeout);
-  }
 };
 
 export const POST: APIRoute = async ({ request }) => {
@@ -96,11 +53,35 @@ export const POST: APIRoute = async ({ request }) => {
       `Согласие на рекламу: ${data.consent_ad ? 'да' : 'нет'}`,
     ].join('\n');
 
-    const telegram = await sendTelegramMessage(text);
-    if (!telegram.ok) {
-      console.error('Telegram lead error:', telegram.error);
-      return new Response(JSON.stringify({ error: telegram.error }), { status: telegram.status || 500 });
+    const subject = `Новая заявка KROPOT SYSTEMS: ${name}`;
+    const stored = await saveLead({
+      source: 'contact-form',
+      subject,
+      text,
+      payload: { name, contact, task, consentAd: Boolean(data.consent_ad) },
+    });
+    if (!stored.ok) {
+      console.error('Lead store error:', stored.error);
     }
+
+    const mail = await sendMail({
+      subject,
+      text,
+    });
+    if (!mail.ok) {
+      console.error('Email lead error:', mail.error);
+      if (!stored.ok) {
+        return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
+      }
+    }
+
+    notifyLeadInTelegram('форма на сайте').then((notification) => {
+      if (!notification.ok) console.error('Telegram lead notification error:', notification.error);
+    });
+
+    notifyLeadInMax({ source: 'форма на сайте', text }).then((notification) => {
+      if (!notification.ok) console.error('MAX lead notification error:', notification.error);
+    });
 
     const bxUrl = getEnv('BITRIX_WEBHOOK_URL');
     if (bxUrl) {

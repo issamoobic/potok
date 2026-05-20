@@ -1,4 +1,8 @@
 import type { APIRoute } from 'astro';
+import { saveLead } from '../../lib/lead-store';
+import { sendMail } from '../../lib/mailer';
+import { notifyLeadInMax } from '../../lib/max-notifier';
+import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
 
 export const prerender = false;
 
@@ -40,7 +44,7 @@ const formatMoscow = (date: Date) => {
 
 const withTrailingSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
 
-const decodeXml = (value: string) =>
+const unescapeXmlText = (value: string) =>
   value
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
@@ -49,7 +53,7 @@ const decodeXml = (value: string) =>
     .replace(/&apos;/g, "'");
 
 const absoluteCalDavUrl = (href: string) => {
-  const decoded = decodeXml(href.trim());
+  const decoded = unescapeXmlText(href.trim());
   if (/^https?:\/\//i.test(decoded)) return withTrailingSlash(decoded);
   return withTrailingSlash(`${CALDAV_ORIGIN}${decoded.startsWith('/') ? '' : '/'}${decoded}`);
 };
@@ -131,32 +135,6 @@ const escapeIcs = (value: string) =>
     .replace(/,/g, '\\,')
     .replace(/;/g, '\\;');
 
-const sendTelegramMessage = async (text: string) => {
-  const tgToken = getEnv('TELEGRAM_BOT_TOKEN');
-  const tgChat = getEnv('TELEGRAM_CHAT_ID');
-
-  if (!tgToken || !tgChat) {
-    return { ok: false, status: 500, error: 'Telegram не настроен' };
-  }
-
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: tgChat, text, disable_web_page_preview: true }),
-    });
-
-    if (!response.ok) {
-      return { ok: false, status: response.status, error: await response.text() };
-    }
-
-    return { ok: true };
-  } catch (error) {
-    console.error('Telegram booking error:', error);
-    return { ok: false, status: 502, error: 'Telegram не ответил' };
-  }
-};
-
 const createCalendarEvent = async (data: {
   name: string;
   contact: string;
@@ -174,11 +152,9 @@ const createCalendarEvent = async (data: {
   const uid = `kropot-demo-${crypto.randomUUID()}@kropotsystems`;
   const createdAt = new Date();
   const description = [
-    `Имя: ${data.name}`,
-    `Контакт: ${data.contact}`,
-    `Продукт: ${data.product}`,
-    `Задача: ${data.goal}`,
-    `Комментарий: ${data.comment || '—'}`,
+    'Новая заявка на демо с сайта KROPOT SYSTEMS.',
+    'Персональные данные отправлены только на почту.',
+    'Проверьте входящие, чтобы связаться с клиентом.',
   ].join('\\n');
 
   const ics = [
@@ -191,7 +167,7 @@ const createCalendarEvent = async (data: {
     `DTSTAMP:${formatDateTime(createdAt)}`,
     `DTSTART:${formatDateTime(data.start)}`,
     `DTEND:${formatDateTime(data.end)}`,
-    `SUMMARY:${escapeIcs(`Демо KROPOT SYSTEMS — ${data.name}`)}`,
+    `SUMMARY:${escapeIcs('Демо KROPOT SYSTEMS')}`,
     `DESCRIPTION:${escapeIcs(description)}`,
     'END:VEVENT',
     'END:VCALENDAR',
@@ -232,7 +208,7 @@ export const POST: APIRoute = async ({ request }) => {
     const slotStart = new Date(String(body.slotStart || ''));
     const slotEnd = new Date(slotStart.getTime() + SLOT_MINUTES * 60_000);
 
-    if (!name || !contact || Number.isNaN(slotStart.getTime())) {
+    if (!name || !contact || !body.consent_pd || Number.isNaN(slotStart.getTime())) {
       return new Response(JSON.stringify({ error: 'Заполните контакт и выберите слот' }), { status: 400 });
     }
 
@@ -241,7 +217,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     const booking = await createCalendarEvent({ name, contact, comment, product, goal, start: slotStart, end: slotEnd });
-    const telegram = await sendTelegramMessage([
+    const leadText = [
       booking.ok ? '🔥 Забронировано демо KROPOT SYSTEMS' : '🔥 Заявка на демо KROPOT SYSTEMS',
       '',
       `Время: ${formatMoscow(slotStart)}`,
@@ -251,12 +227,44 @@ export const POST: APIRoute = async ({ request }) => {
       `Задача: ${goal}`,
       `Комментарий: ${comment || '—'}`,
       booking.ok ? 'Календарь: слот создан' : `Календарь: не создался (${booking.error})`,
-    ].join('\n'));
-
-    if (!telegram.ok) {
-      console.error('Telegram booking lead error:', telegram.error);
-      return new Response(JSON.stringify({ error: telegram.error }), { status: telegram.status || 500 });
+    ].join('\n');
+    const subject = `Демо KROPOT SYSTEMS: ${name}`;
+    const stored = await saveLead({
+      source: 'demo-booking',
+      subject,
+      text: leadText,
+      payload: {
+        name,
+        contact,
+        comment,
+        product,
+        goal,
+        slotStart: slotStart.toISOString(),
+        calendarBooked: booking.ok,
+      },
+    });
+    if (!stored.ok) {
+      console.error('Booking lead store error:', stored.error);
     }
+
+    const mail = await sendMail({
+      subject,
+      text: leadText,
+    });
+    if (!mail.ok) {
+      console.error('Email booking lead error:', mail.error);
+      if (!stored.ok) {
+        return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
+      }
+    }
+
+    notifyLeadInTelegram('бронирование демо').then((notification) => {
+      if (!notification.ok) console.error('Telegram booking notification error:', notification.error);
+    });
+
+    notifyLeadInMax({ source: 'бронирование демо', text: leadText }).then((notification) => {
+      if (!notification.ok) console.error('MAX booking notification error:', notification.error);
+    });
 
     return new Response(JSON.stringify({
       ok: true,

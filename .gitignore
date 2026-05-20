@@ -4,3 +4,8 @@ dist
 .DS_Store
 .astro
 .vercel
+.codex_paramiko/
+*_key*
+kropot_vps*
+kropot-deploy.tar
+*.pem

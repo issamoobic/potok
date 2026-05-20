@@ -59,6 +59,17 @@
         <input name="name" required placeholder="Имя" class="widget-input" />
         <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="Телефон, email или Telegram" class="widget-input" />
         <textarea name="comment" rows="2" placeholder="Комментарий, если нужно" class="widget-input resize-none"></textarea>
+        <label class="widget-consent">
+          <input type="checkbox" name="consent_pd" required />
+          <span>
+            Согласен на обработку персональных данных
+            <a href="/privacy">по политике</a>.
+          </span>
+        </label>
+        <label class="widget-consent">
+          <input type="checkbox" name="consent_ad" />
+          <span>Согласен получать предложения и материалы.</span>
+        </label>
         <button class="w-full bg-paper text-ink rounded-lg px-4 py-3 text-sm font-semibold hover:opacity-90 transition">
           Записаться на демо
         </button>
@@ -130,6 +141,25 @@
     box-shadow: 0 0 0 2px rgba(255, 106, 0, 0.25);
   }
 
+  .widget-consent {
+    display: flex;
+    gap: 0.55rem;
+    align-items: flex-start;
+    color: rgba(255, 244, 235, 0.72);
+    font-size: 0.72rem;
+    line-height: 1.35;
+  }
+
+  .widget-consent input {
+    flex: 0 0 auto;
+    margin-top: 0.12rem;
+  }
+
+  .widget-consent a {
+    color: #ff8a2a;
+    text-decoration: underline;
+  }
+
   .slot-btn {
     width: 100%;
     border: 1px solid rgba(255, 106, 0, 0.28);
@@ -150,43 +180,6 @@
     background: rgba(255, 106, 0, 0.14);
   }
 
-  .widget-telegram-link {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.45rem;
-    width: 100%;
-    min-height: 2.25rem;
-    border-radius: 0.65rem;
-    background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(108, 18, 168, 0.92));
-    color: #FF6A00;
-    font-size: 0.78rem;
-    font-weight: 850;
-    box-shadow: 0 14px 34px rgba(75, 0, 130, 0.28), 0 0 24px rgba(255, 106, 0, 0.14);
-  }
-
-  .widget-telegram-link__icon {
-    display: grid;
-    place-items: center;
-    width: 1.32rem;
-    height: 1.32rem;
-    border-radius: 999px;
-    color: #fff;
-    background: linear-gradient(180deg, #37aee2 0%, #1e96c8 100%);
-  }
-
-  .widget-telegram-link__icon::before {
-    content: "";
-    width: 0.78rem;
-    height: 0.78rem;
-    background: currentColor;
-    clip-path: polygon(5% 49%, 92% 12%, 72% 88%, 46% 63%, 33% 78%, 34% 56%);
-    transform: translateX(-0.03rem);
-  }
-
-  .widget-telegram-link span:not(.widget-telegram-link__icon) {
-    color: rgba(255, 244, 235, 0.94);
-  }
 </style>
 
 <script is:inline>
@@ -222,13 +215,12 @@
       <div class="space-y-3">
         <div class="text-xs leading-relaxed text-white/78">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
         <div class="grid grid-cols-1 gap-2">
-          <a href="https://t.me/kropotsystems" target="_blank" rel="noopener" class="widget-telegram-link" aria-label="Telegram KROPOT SYSTEMS">
-            <span class="widget-telegram-link__icon" aria-hidden="true"></span>
-            <span>Telegram</span>
-            <strong>@kropotsystems</strong>
-          </a>
           <a href="mailto:kropotsystems@yandex.ru" class="widget-contact-link">Email</a>
           <a href="tel:+79203555787" class="widget-contact-link">Позвонить</a>
+          <a href="https://max.ru/u/f9LHodD0cOJgMMvqd7pnQ7s9KaM0pJdFSTkgc0GOCz7lSq6niYlvMFi5D6s" target="_blank" rel="noopener noreferrer" class="widget-max-link">
+            <img src="/max-logo.png" alt="" class="widget-max-link__icon" loading="lazy" />
+            <span>Написать в MAX</span>
+          </a>
         </div>
       </div>
     `;
@@ -327,6 +319,11 @@
 
       if (!validateContact(String(formData.contact || ''))) {
         status.textContent = 'Укажите корректный телефон, email или Telegram.';
+        return;
+      }
+
+      if (!formData.consent_pd) {
+        status.textContent = 'Подтвердите согласие на обработку данных.';
         return;
       }
 

@@ -13,12 +13,10 @@ const { title = 'KROPOT SYSTEMS — ИИ-агенты для бизнеса', de
     <meta property="og:type" content="website" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
-    <!-- Я.Метрика — вставь ID после регистрации -->
   </head>
   <body class="grain">
     <slot />
     <script>
-      // Smooth scroll для якорей
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const scrollToTarget = (target) => {

@@ -18,7 +18,6 @@ export const POST: APIRoute = async ({ request }) => {
   try {
     const { messages } = await request.json();
 
-    // Попытка 1: OpenRouter
     const orKey = import.meta.env.OPENROUTER_API_KEY;
     const orModel = import.meta.env.OPENROUTER_MODEL || 'anthropic/claude-haiku-4.5';
     if (orKey) {
@@ -45,7 +44,6 @@ export const POST: APIRoute = async ({ request }) => {
       }
     }
 
-    // Попытка 2: YandexGPT (резерв)
     const yKey = import.meta.env.YANDEX_API_KEY;
     const yFolder = import.meta.env.YANDEX_FOLDER_ID;
     if (yKey && yFolder) {
@@ -72,7 +70,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     return new Response(JSON.stringify({
-      reply: 'Извините, технические неполадки. Напишите kropotsystems@yandex.ru или в Telegram @kropotsystems — ответим лично.',
+      reply: 'Извините, технические неполадки. Напишите kropotsystems@yandex.ru или позвоните по номеру на сайте — ответим лично.',
     }), { status: 200 });
   } catch (e) {
     console.error(e);

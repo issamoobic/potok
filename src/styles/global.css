@@ -1,5 +1,4 @@
 @import url('https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600;700&display=swap');
-/* На прод: скачай Onest с https://fonts.google.com/specimen/Onest, положи в /public/fonts/ и подключи через @font-face — Google Fonts в РФ замедляется. */
 
 @tailwind base;
 @tailwind components;
@@ -74,21 +73,19 @@ body {
   background: var(--ks-orange);
   mask: url('/kropot-systems-logo-cropped.png') center / contain no-repeat;
   -webkit-mask: url('/kropot-systems-logo-cropped.png') center / contain no-repeat;
-  transition: background-color 620ms var(--ks-ease), filter 620ms var(--ks-ease);
+  transition: background-color 220ms var(--ks-ease);
 }
 
 .logo-on-dark .brand-logo-mark {
   background: var(--ks-orange);
-  filter: drop-shadow(0 0 18px rgba(255, 106, 0, 0.22));
 }
 
 .logo-on-warm .brand-logo-mark {
   background: var(--ks-purple);
-  filter: drop-shadow(0 0 16px rgba(75, 0, 130, 0.2));
 }
 
 #site-nav {
-  transition: background-color 620ms var(--ks-ease), border-color 620ms var(--ks-ease), color 620ms var(--ks-ease);
+  transition: background-color 180ms var(--ks-ease), border-color 180ms var(--ks-ease), color 180ms var(--ks-ease);
 }
 
 #site-nav.logo-on-dark {
@@ -122,7 +119,7 @@ body {
 #site-nav.logo-on-warm .nav-contact-button {
   border-color: rgba(75, 0, 130, 0.35);
   background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.94));
-  color: var(--ks-orange);
+  color: #fff4eb;
 }
 
 #site-nav.logo-on-warm .nav-contact-button:hover {
@@ -131,7 +128,10 @@ body {
 }
 
 #site-nav.logo-on-warm .telegram-button {
-  color: var(--ks-orange);
+  border-color: rgba(75, 0, 130, 0.4);
+  color: #fff4eb;
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.94));
+  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.24);
 }
 
 #site-nav.logo-on-warm .telegram-button span:not(.telegram-button__icon) {
@@ -140,6 +140,18 @@ body {
 
 #site-nav.logo-on-warm .telegram-button__icon {
   color: #fff;
+}
+
+#site-nav.logo-on-warm .max-button--nav {
+  border-color: rgba(75, 0, 130, 0.42);
+  color: #fff4eb;
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.94));
+  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.24);
+}
+
+#site-nav.logo-on-warm .max-button--nav:hover {
+  color: #fff4eb;
+  box-shadow: 0 18px 42px rgba(75, 0, 130, 0.28), 0 0 30px rgba(75, 0, 130, 0.18);
 }
 
 .premium-card {
@@ -186,7 +198,21 @@ body {
     radial-gradient(circle at 85% 10%, rgba(255, 174, 84, 0.5), transparent 7rem);
   box-shadow: 0 18px 44px rgba(75, 0, 130, 0.24), 0 0 34px rgba(255, 106, 0, 0.18);
   font-weight: 800;
+  max-width: 100%;
   transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease);
+}
+
+.telegram-button:hover,
+.nav-contact-button:hover,
+.hero-cta:hover,
+.cta-glow:hover {
+  transform: translateY(-2px);
+}
+
+.telegram-button strong,
+.telegram-button span:not(.telegram-button__icon) {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .telegram-button__icon {
@@ -227,6 +253,23 @@ body {
 
 .telegram-button--contact {
   margin-top: 0.45rem;
+  width: fit-content;
+  max-width: 100%;
+  border-color: rgba(75, 0, 130, 0.42);
+  background: linear-gradient(135deg, rgba(75, 0, 130, 0.98), rgba(98, 18, 150, 0.96));
+  color: #fff4eb;
+  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.24);
+}
+
+.telegram-button--contact span:not(.telegram-button__icon),
+.telegram-button--contact strong {
+  color: #fff4eb;
+}
+
+.telegram-button--contact strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .telegram-button--nav {
@@ -239,6 +282,83 @@ body {
 .telegram-button--nav .telegram-button__icon {
   width: 1.42rem;
   height: 1.42rem;
+}
+
+.max-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  min-height: 3.05rem;
+  padding: 0.72rem 1.12rem 0.72rem 0.76rem;
+  border: 1px solid rgba(75, 0, 130, 0.42);
+  border-radius: 999px;
+  color: var(--ks-purple);
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 14px 34px rgba(75, 0, 130, 0.14);
+  font-size: 0.94rem;
+  font-weight: 900;
+  line-height: 1;
+  transition: transform 260ms var(--ks-ease), box-shadow 260ms var(--ks-ease), border-color 260ms var(--ks-ease), background-color 260ms var(--ks-ease);
+}
+
+.max-button:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 20px 48px rgba(75, 0, 130, 0.18);
+}
+
+.max-button__icon {
+  width: 1.8rem;
+  height: 1.8rem;
+  flex: 0 0 auto;
+  border-radius: 0.58rem;
+  box-shadow: 0 8px 20px rgba(43, 99, 255, 0.24);
+}
+
+.max-button--contact {
+  margin-top: 1rem;
+  max-width: 100%;
+  border-color: rgba(28, 9, 45, 0.74);
+  color: #fff4eb;
+  background:
+    linear-gradient(135deg, rgba(18, 7, 28, 0.98), rgba(60, 24, 124, 0.98)),
+    radial-gradient(circle at 0% 0%, rgba(43, 141, 255, 0.28), transparent 6rem);
+  box-shadow: 0 16px 38px rgba(18, 7, 28, 0.24), 0 0 0 1px rgba(255, 244, 235, 0.08) inset;
+}
+
+.max-button--contact .max-button__icon {
+  padding: 0.14rem;
+  background: #fff;
+  box-shadow: 0 10px 22px rgba(18, 7, 28, 0.24);
+}
+
+.max-button--contact:hover {
+  border-color: rgba(255, 244, 235, 0.58);
+  background:
+    linear-gradient(135deg, rgba(18, 7, 28, 1), rgba(76, 30, 150, 1)),
+    radial-gradient(circle at 0% 0%, rgba(43, 141, 255, 0.34), transparent 6rem);
+  box-shadow: 0 22px 52px rgba(18, 7, 28, 0.28), 0 0 0 1px rgba(255, 244, 235, 0.12) inset;
+}
+
+.max-button--nav {
+  min-height: 2.8rem;
+  padding: 0.56rem 0.9rem 0.56rem 0.62rem;
+  border-color: rgba(255, 106, 0, 0.42);
+  color: #fff4eb;
+  background:
+    linear-gradient(135deg, rgba(75, 0, 130, 1), rgba(124, 24, 178, 0.96) 58%, rgba(255, 106, 0, 0.92)),
+    radial-gradient(circle at 85% 10%, rgba(255, 174, 84, 0.5), transparent 7rem);
+  box-shadow: 0 16px 38px rgba(75, 0, 130, 0.28), 0 0 30px rgba(255, 106, 0, 0.2);
+  font-size: 0.84rem;
+}
+
+.max-button--nav .max-button__icon {
+  width: 1.42rem;
+  height: 1.42rem;
+  padding: 0.1rem;
+  border-radius: 0.42rem;
+  background: #fff;
 }
 
 @media (max-width: 767px) {
@@ -274,6 +394,7 @@ body {
 }
 
 .widget-telegram-link,
+.widget-max-link,
 .widget-contact-link {
   display: inline-flex;
   align-items: center;
@@ -283,17 +404,16 @@ body {
   border-radius: 0.75rem;
   font-size: 0.82rem;
   font-weight: 900;
+  max-width: 100%;
   transition: transform 220ms var(--ks-ease), box-shadow 220ms var(--ks-ease), border-color 220ms var(--ks-ease);
 }
 
 .widget-telegram-link {
   gap: 0.48rem;
   border: 1px solid rgba(255, 106, 0, 0.55);
-  background:
-    linear-gradient(135deg, rgba(75, 0, 130, 1), rgba(120, 23, 174, 0.96) 58%, rgba(255, 106, 0, 0.94)),
-    radial-gradient(circle at 88% 12%, rgba(255, 174, 84, 0.48), transparent 5rem);
-  color: #ffb36f;
-  box-shadow: 0 16px 38px rgba(75, 0, 130, 0.32), 0 0 30px rgba(255, 106, 0, 0.18);
+  background: linear-gradient(135deg, rgba(75, 0, 130, 1), rgba(120, 23, 174, 0.96));
+  color: #fff4eb;
+  box-shadow: 0 16px 38px rgba(75, 0, 130, 0.28);
 }
 
 .widget-telegram-link__icon {
@@ -318,7 +438,9 @@ body {
 }
 
 .widget-telegram-link span:not(.widget-telegram-link__icon) {
+  min-width: 0;
   color: rgba(255, 244, 235, 0.96);
+  overflow-wrap: anywhere;
 }
 
 .widget-contact-link {
@@ -328,7 +450,23 @@ body {
   box-shadow: inset 0 0 0 1px rgba(255, 244, 235, 0.04);
 }
 
+.widget-max-link {
+  gap: 0.48rem;
+  border: 1px solid rgba(120, 92, 255, 0.5);
+  background: linear-gradient(135deg, rgba(35, 116, 255, 0.96), rgba(142, 57, 224, 0.92));
+  color: #fff;
+  box-shadow: 0 16px 38px rgba(63, 94, 255, 0.26);
+}
+
+.widget-max-link__icon {
+  width: 1.32rem;
+  height: 1.32rem;
+  flex: 0 0 auto;
+  border-radius: 0.38rem;
+}
+
 .widget-telegram-link:hover,
+.widget-max-link:hover,
 .widget-contact-link:hover {
   transform: translateY(-1px);
   border-color: rgba(255, 244, 235, 0.72);
@@ -383,7 +521,6 @@ body {
     radial-gradient(circle at 88% 8%, rgba(255, 106, 0, 0.18), transparent 14rem),
     linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.045));
   box-shadow: 0 24px 74px rgba(0, 0, 0, 0.24);
-  backdrop-filter: blur(16px);
 }
 
 .comparison-card--featured {
@@ -795,7 +932,7 @@ body {
   width: max-content;
   gap: 0.65rem;
   padding: 0.95rem 0;
-  animation: marquee-flow 34s linear infinite;
+  animation: none;
 }
 
 .case-marquee__item {
@@ -859,7 +996,6 @@ body {
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.16);
   font-size: 0.9rem;
   font-weight: 800;
-  backdrop-filter: blur(14px);
   transition: transform 320ms var(--ks-ease), border-color 320ms var(--ks-ease), background-color 320ms var(--ks-ease);
 }
 
@@ -882,17 +1018,11 @@ body {
   background: linear-gradient(110deg, var(--ks-purple) 0%, #6a00b6 42%, var(--ks-orange) 78%, var(--ks-purple) 100%);
   background-size: 220% 100%;
   box-shadow: 0 0 0 1px rgba(255, 106, 0, 0.35), 0 16px 44px rgba(255, 106, 0, 0.2), 0 0 54px rgba(75, 0, 130, 0.32);
-  animation: cta-breathe 4.8s var(--ks-ease) infinite, gradient-drift 7s linear infinite;
+  animation: none;
 }
 
 .cta-glow::after {
-  content: '';
-  position: absolute;
-  inset: -40% -70%;
-  z-index: -1;
-  background: linear-gradient(100deg, transparent 42%, rgba(255, 244, 235, 0.34) 50%, transparent 58%);
-  transform: translateX(-55%);
-  animation: cta-sweep 4.8s var(--ks-ease) infinite;
+  display: none;
 }
 
 .cta-glow:hover {
@@ -938,31 +1068,15 @@ body {
     inset 0 -12px 22px rgba(18, 7, 28, 0.28),
     0 18px 48px rgba(75, 0, 130, 0.34),
     0 0 38px rgba(255, 106, 0, 0.24);
-  backdrop-filter: blur(16px);
-  animation: widget-breathe 5.8s var(--ks-ease) infinite, gradient-drift 8s linear infinite;
+  animation: none;
 }
 
 .widget-pulse::before {
-  content: '';
-  position: absolute;
-  inset: -8px;
-  z-index: -1;
-  border-radius: inherit;
-  background: conic-gradient(from 0deg, rgba(255, 106, 0, 0.08), rgba(255, 106, 0, 0.5), rgba(122, 32, 200, 0.42), rgba(255, 106, 0, 0.08));
-  filter: blur(10px);
-  opacity: 0.72;
-  animation: soft-rotate 10s linear infinite;
+  display: none;
 }
 
 .widget-pulse::after {
-  content: '';
-  position: absolute;
-  inset: -45% -70%;
-  z-index: 1;
-  pointer-events: none;
-  background: linear-gradient(105deg, transparent 42%, rgba(255, 244, 235, 0.34) 50%, transparent 58%);
-  transform: translateX(-48%) rotate(8deg);
-  animation: widget-shimmer 5.6s var(--ks-ease) infinite;
+  display: none;
 }
 
 .ai-trigger-core {
@@ -1008,7 +1122,7 @@ body {
   height: 40px;
   border-radius: 999px;
   border: 1px solid rgba(255, 106, 0, 0.34);
-  animation: soft-rotate 8.5s linear infinite;
+  animation: none;
 }
 
 .ai-trigger-spark {
@@ -1059,7 +1173,6 @@ body {
   color: var(--ks-text);
   background: rgba(18, 7, 28, 0.78);
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24), 0 0 28px rgba(255, 106, 0, 0.08);
-  backdrop-filter: blur(14px);
 }
 
 .workflow-node::before {
@@ -1109,7 +1222,6 @@ body {
   color: var(--ks-text);
   background: rgba(18, 7, 28, 0.78);
   box-shadow: 0 16px 42px rgba(0, 0, 0, 0.24), 0 0 28px rgba(255, 106, 0, 0.08);
-  backdrop-filter: blur(14px);
 }
 
 .workflow-pill::before {

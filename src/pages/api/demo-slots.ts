@@ -39,7 +39,7 @@ const formatCalDavUtc = (date: Date) =>
 
 const withTrailingSlash = (url: string) => (url.endsWith('/') ? url : `${url}/`);
 
-const decodeXml = (value: string) =>
+const unescapeXmlText = (value: string) =>
   value
     .replace(/&amp;/g, '&')
     .replace(/&lt;/g, '<')
@@ -48,7 +48,7 @@ const decodeXml = (value: string) =>
     .replace(/&apos;/g, "'");
 
 const absoluteCalDavUrl = (href: string) => {
-  const decoded = decodeXml(href.trim());
+  const decoded = unescapeXmlText(href.trim());
   if (/^https?:\/\//i.test(decoded)) return withTrailingSlash(decoded);
   return withTrailingSlash(`${CALDAV_ORIGIN}${decoded.startsWith('/') ? '' : '/'}${decoded}`);
 };
