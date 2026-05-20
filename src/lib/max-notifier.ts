@@ -10,6 +10,12 @@ const MAX_TEXT_LIMIT = 4000;
 const trimMessage = (value: string) =>
   value.length <= MAX_TEXT_LIMIT ? value : `${value.slice(0, MAX_TEXT_LIMIT - 3)}...`;
 
+const cleanRecipient = (value: string | undefined) => {
+  const trimmed = value?.trim();
+  if (!trimmed || trimmed === '0') return undefined;
+  return trimmed;
+};
+
 export const notifyLeadInMax = async ({
   source,
   text,
@@ -17,9 +23,9 @@ export const notifyLeadInMax = async ({
   source: string;
   text: string;
 }): Promise<MaxNotifyResult> => {
-  const token = getEnv('MAX_BOT_TOKEN');
-  const chatId = getEnv('MAX_CHAT_ID');
-  const userId = getEnv('MAX_USER_ID');
+  const token = getEnv('MAX_BOT_TOKEN')?.trim();
+  const chatId = cleanRecipient(getEnv('MAX_CHAT_ID'));
+  const userId = cleanRecipient(getEnv('MAX_USER_ID'));
 
   if (!token || (!chatId && !userId)) {
     return { ok: true, skipped: true };
