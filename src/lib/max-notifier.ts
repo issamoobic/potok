@@ -32,10 +32,10 @@ export const notifyLeadInMax = async ({
   }
 
   const url = new URL(MAX_API_URL);
-  if (chatId) {
-    url.searchParams.set('chat_id', chatId);
-  } else if (userId) {
+  if (userId) {
     url.searchParams.set('user_id', userId);
+  } else if (chatId) {
+    url.searchParams.set('chat_id', chatId);
   }
 
   try {
