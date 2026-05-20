@@ -3,10 +3,9 @@ import { saveLead } from '../../lib/lead-store';
 import { sendMail } from '../../lib/mailer';
 import { notifyLeadInMax } from '../../lib/max-notifier';
 import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
+import { getEnv } from '../../lib/env';
 
 export const prerender = false;
-
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
 const validateContact = (value: string) => {
   const contact = value.trim();

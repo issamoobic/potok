@@ -1,4 +1,4 @@
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
+import { getEnv } from './env';
 
 type TelegramNotifyResult =
   | { ok: true; skipped?: boolean }

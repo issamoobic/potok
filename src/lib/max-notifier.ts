@@ -1,4 +1,4 @@
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
+import { getEnv } from './env';
 
 type MaxNotifyResult =
   | { ok: true; skipped?: boolean }
@@ -8,7 +8,7 @@ const MAX_API_URL = 'https://platform-api.max.ru/messages';
 const MAX_TEXT_LIMIT = 4000;
 
 const trimMessage = (value: string) =>
-  value.length <= MAX_TEXT_LIMIT ? value : `${value.slice(0, MAX_TEXT_LIMIT - 1)}…`;
+  value.length <= MAX_TEXT_LIMIT ? value : `${value.slice(0, MAX_TEXT_LIMIT - 3)}...`;
 
 export const notifyLeadInMax = async ({
   source,

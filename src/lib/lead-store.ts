@@ -1,7 +1,6 @@
 import { appendFile, mkdir } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
-
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
+import { getEnv } from './env';
 
 type StoredLead = {
   source: string;

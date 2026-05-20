@@ -3,14 +3,13 @@ import { saveLead } from '../../lib/lead-store';
 import { sendMail } from '../../lib/mailer';
 import { notifyLeadInMax } from '../../lib/max-notifier';
 import { notifyLeadInTelegram } from '../../lib/telegram-notifier';
+import { getEnv } from '../../lib/env';
 
 export const prerender = false;
 
 const SLOT_MINUTES = 45;
 const MSK_OFFSET_MINUTES = 180;
 const CALDAV_ORIGIN = 'https://caldav.yandex.ru';
-
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
 const calDavUserCandidates = () => {
   const user = getEnv('YANDEX_CALDAV_USER') || 'kropotsystems@yandex.ru';

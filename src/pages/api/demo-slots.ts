@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { getEnv } from '../../lib/env';
 
 export const prerender = false;
 
@@ -8,8 +9,6 @@ const WORK_START_HOUR = 9;
 const WORK_END_HOUR = 18;
 const MSK_OFFSET_MINUTES = 180;
 const CALDAV_ORIGIN = 'https://caldav.yandex.ru';
-
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
 
 const pad = (value: number) => String(value).padStart(2, '0');
 

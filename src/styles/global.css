@@ -106,14 +106,14 @@ body {
   color: var(--ks-purple);
 }
 
-#site-nav.logo-on-warm a[href="#contact"] {
+#site-nav.logo-on-warm .nav-contact-button[href="#contact"] {
   border-color: rgba(75, 0, 130, 0.48);
-  color: var(--ks-purple);
+  color: #fff4eb;
 }
 
-#site-nav.logo-on-warm a[href="#contact"]:hover {
+#site-nav.logo-on-warm .nav-contact-button[href="#contact"]:hover {
   background: var(--ks-purple);
-  color: var(--ks-orange);
+  color: #fff4eb;
 }
 
 #site-nav.logo-on-warm .nav-contact-button {
@@ -134,7 +134,7 @@ body {
   box-shadow: 0 14px 34px rgba(75, 0, 130, 0.24);
 }
 
-#site-nav.logo-on-warm .telegram-button span:not(.telegram-button__icon) {
+#site-nav.logo-on-warm .telegram-button span {
   color: rgba(255, 244, 235, 0.92);
 }
 

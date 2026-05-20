@@ -1,6 +1,5 @@
 import tls from 'node:tls';
-
-const getEnv = (name: string) => import.meta.env[name] || process.env[name];
+import { getEnv } from './env';
 
 type MailResult =
   | { ok: true; skipped?: boolean }
