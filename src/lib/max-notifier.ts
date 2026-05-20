@@ -1,8 +1,9 @@
 import { getEnv } from './env';
 
 type MaxNotifyResult =
-  | { ok: true; skipped?: boolean }
-  | { ok: false; error: string };
+  | { ok: true; skipped?: false; recipient: string }
+  | { ok: true; skipped: true; reason: string }
+  | { ok: false; error: string; recipient?: string; status?: number };
 
 const MAX_API_URL = 'https://platform-api.max.ru/messages';
 const MAX_TEXT_LIMIT = 4000;
@@ -27,15 +28,23 @@ export const notifyLeadInMax = async ({
   const chatId = cleanRecipient(getEnv('MAX_CHAT_ID'));
   const userId = cleanRecipient(getEnv('MAX_USER_ID'));
 
-  if (!token || (!chatId && !userId)) {
-    return { ok: true, skipped: true };
+  if (!token) {
+    return { ok: true, skipped: true, reason: 'MAX_BOT_TOKEN is missing' };
+  }
+
+  if (!chatId && !userId) {
+    return { ok: true, skipped: true, reason: 'MAX_USER_ID or MAX_CHAT_ID is missing' };
   }
 
   const url = new URL(MAX_API_URL);
+  let recipient = '';
+
   if (userId) {
     url.searchParams.set('user_id', userId);
+    recipient = `user_id:${userId}`;
   } else if (chatId) {
     url.searchParams.set('chat_id', chatId);
+    recipient = `chat_id:${chatId}`;
   }
 
   try {
@@ -47,17 +56,24 @@ export const notifyLeadInMax = async ({
       },
       body: JSON.stringify({
         text: trimMessage(['Новая заявка KROPOT SYSTEMS', `Источник: ${source}`, '', text].join('\n')),
+        notify: true,
       }),
     });
 
     if (!response.ok) {
-      return { ok: false, error: await response.text() };
+      return {
+        ok: false,
+        status: response.status,
+        recipient,
+        error: await response.text(),
+      };
     }
 
-    return { ok: true };
+    return { ok: true, recipient };
   } catch (error) {
     return {
       ok: false,
+      recipient,
       error: error instanceof Error ? error.message : 'MAX notification error',
     };
   }

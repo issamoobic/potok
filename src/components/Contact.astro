@@ -126,7 +126,7 @@
       const result = await r.json().catch(() => ({}));
 
       if (r.ok) {
-        status.textContent = '✓ Заявка отправлена. Свяжемся в течение часа.';
+        status.textContent = '✓ Заявка отправлена. Мы свяжемся с вами в ближайшее время и назначим демонстрацию решений под ваш бизнес.';
         form.reset();
       } else {
         status.innerHTML = contactFallback;

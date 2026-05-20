@@ -54,11 +54,11 @@
 
       <form id="widget-form" class="hidden space-y-3">
         <p class="text-sm leading-relaxed">
-          Отлично. Оставьте контакт — запишем на демо и покажем, как это может работать в вашем процессе.
+          Отлично. Расскажите, что хотите автоматизировать или посмотреть в работе, и оставьте контакт.
         </p>
         <input name="name" required placeholder="Имя" class="widget-input" />
         <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="Телефон, email или Telegram" class="widget-input" />
-        <textarea name="comment" rows="2" placeholder="Комментарий, если нужно" class="widget-input resize-none"></textarea>
+        <textarea name="comment" rows="3" placeholder="Что нужно автоматизировать или показать на демо" class="widget-input resize-none"></textarea>
         <label class="widget-consent">
           <input type="checkbox" name="consent_pd" required />
           <span>
@@ -71,29 +71,15 @@
           <span>Согласен получать предложения и материалы.</span>
         </label>
         <button class="w-full bg-paper text-ink rounded-lg px-4 py-3 text-sm font-semibold hover:opacity-90 transition">
-          Записаться на демо
+          Отправить заявку
         </button>
         <div id="widget-status" class="min-h-5 text-xs opacity-80"></div>
       </form>
 
-      <div id="step-slot" class="hidden space-y-4">
-        <p class="text-sm leading-relaxed">
-          Выберите удобное время для демо. Показываем ближайшие свободные слоты из календаря.
-        </p>
-        <div id="slot-status" class="min-h-5 text-xs text-white/72">Загружаем слоты...</div>
-        <div id="slot-list" class="grid grid-cols-1 gap-2"></div>
-        <button id="slot-confirm" class="hidden w-full rounded-lg bg-paper px-4 py-3 text-sm font-semibold text-ink transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45" disabled>
-          Забронировать демо
-        </button>
-        <button id="slot-back" class="widget-secondary-action w-full rounded-lg border border-paper/30 px-4 py-2.5 text-sm font-semibold text-paper transition hover:bg-paper/10">
-          Изменить контакт
-        </button>
-      </div>
-
       <div id="widget-success" class="hidden space-y-3">
-        <div id="widget-success-title" class="text-lg font-semibold">Демо забронировано</div>
+        <div id="widget-success-title" class="text-lg font-semibold">Заявка отправлена</div>
         <p id="widget-success-text" class="text-sm leading-relaxed opacity-90">
-          Спасибо! Слот закреплён в календаре, а мы свяжемся с вами перед встречей.
+          Спасибо! Мы свяжемся с вами в ближайшее время и назначим демонстрацию решений под ваш бизнес.
         </p>
       </div>
     </div>
@@ -160,26 +146,6 @@
     text-decoration: underline;
   }
 
-  .slot-btn {
-    width: 100%;
-    border: 1px solid rgba(255, 106, 0, 0.28);
-    border-radius: 10px;
-    padding: 10px 12px;
-    color: rgba(255, 244, 235, 0.86);
-    font-size: 13px;
-    font-weight: 700;
-    text-align: left;
-    background: rgba(255, 255, 255, 0.04);
-    transition: background-color 180ms ease, border-color 180ms ease, color 180ms ease;
-  }
-
-  .slot-btn:hover,
-  .slot-btn.is-selected {
-    border-color: rgba(255, 106, 0, 0.78);
-    color: #FF8A2A;
-    background: rgba(255, 106, 0, 0.14);
-  }
-
 </style>
 
 <script is:inline>
@@ -191,11 +157,6 @@
     const startStep = document.getElementById('step-start');
     const goalStep = document.getElementById('step-goal');
     const widgetForm = document.getElementById('widget-form');
-    const slotStep = document.getElementById('step-slot');
-    const slotList = document.getElementById('slot-list');
-    const slotStatus = document.getElementById('slot-status');
-    const slotConfirm = document.getElementById('slot-confirm');
-    const slotBack = document.getElementById('slot-back');
     const successStep = document.getElementById('widget-success');
     const successTitle = document.getElementById('widget-success-title');
     const successText = document.getElementById('widget-success-text');
@@ -225,7 +186,7 @@
       </div>
     `;
 
-    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !slotStep || !slotList || !slotStatus || !slotConfirm || !slotBack || !successStep || !successTitle || !successText || !status) {
+    if (!toggle || !panel || !nudge || !closeBtn || !startStep || !goalStep || !widgetForm || !successStep || !successTitle || !successText || !status) {
       return;
     }
 
@@ -233,56 +194,14 @@
       product: 'demo',
       goal: 'integration',
     };
-    let pendingFormData = null;
-    let selectedSlot = null;
 
     function showOnly(step) {
-      [startStep, goalStep, widgetForm, slotStep, successStep].forEach((el) => el.classList.add('hidden'));
+      [startStep, goalStep, widgetForm, successStep].forEach((el) => el.classList.add('hidden'));
       step.classList.remove('hidden');
     }
 
     function showContactFallback(target) {
       target.innerHTML = contactFallback;
-      slotConfirm.classList.add('hidden');
-      slotList.innerHTML = '';
-    }
-
-    async function loadSlots() {
-      selectedSlot = null;
-      slotConfirm.disabled = true;
-      slotConfirm.classList.add('hidden');
-      slotList.innerHTML = '';
-      slotStatus.textContent = 'Загружаем слоты...';
-
-      try {
-        const response = await fetch('/api/demo-slots');
-        const data = await response.json().catch(() => ({}));
-
-        if (!response.ok || !data.slots?.length) {
-          showContactFallback(slotStatus);
-          return;
-        }
-
-        slotStatus.textContent = 'Выберите один из доступных слотов:';
-        slotList.innerHTML = '';
-        slotConfirm.classList.remove('hidden');
-
-        data.slots.forEach((slot) => {
-          const button = document.createElement('button');
-          button.type = 'button';
-          button.className = 'slot-btn';
-          button.textContent = `${slot.label} МСК`;
-          button.addEventListener('click', () => {
-            selectedSlot = slot;
-            slotList.querySelectorAll('.slot-btn').forEach((item) => item.classList.remove('is-selected'));
-            button.classList.add('is-selected');
-            slotConfirm.disabled = false;
-          });
-          slotList.append(button);
-        });
-      } catch {
-        showContactFallback(slotStatus);
-      }
     }
 
     function openPanel() {
@@ -327,49 +246,24 @@
         return;
       }
 
-      pendingFormData = formData;
-      status.textContent = '';
-      showOnly(slotStep);
-      await loadSlots();
-    });
-
-    slotBack.addEventListener('click', () => {
-      showOnly(widgetForm);
-    });
-
-    slotConfirm.addEventListener('click', async () => {
-      if (!pendingFormData || !selectedSlot) return;
-
-      slotConfirm.disabled = true;
-      slotStatus.textContent = 'Бронируем слот...';
-
       try {
-        const response = await fetch('/api/demo-booking', {
+        const response = await fetch('/api/widget-lead', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ...pendingFormData, ...state, slotStart: selectedSlot.start }),
+          body: JSON.stringify({ ...formData, ...state }),
         });
 
-        const data = await response.json().catch(() => ({}));
-
         if (!response.ok) {
-          showContactFallback(slotStatus);
+          showContactFallback(status);
           return;
         }
 
-        if (data.calendarBooked === false) {
-          successTitle.textContent = 'Заявка отправлена';
-          successText.textContent = 'Спасибо! Мы получили выбранное время и свяжемся с вами, чтобы подтвердить демо.';
-        } else {
-          successTitle.textContent = 'Демо забронировано';
-          successText.textContent = 'Спасибо! Слот закреплён в календаре, а мы свяжемся с вами перед встречей.';
-        }
-
+        successTitle.textContent = 'Заявка отправлена';
+        successText.textContent = 'Спасибо! Мы свяжемся с вами в ближайшее время и назначим демонстрацию решений под ваш бизнес.';
         widgetForm.reset();
         showOnly(successStep);
       } catch {
-        showContactFallback(slotStatus);
-        slotConfirm.disabled = false;
+        showContactFallback(status);
       }
     });
 

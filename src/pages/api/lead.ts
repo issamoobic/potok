@@ -64,9 +64,14 @@ export const POST: APIRoute = async ({ request }) => {
       return new Response(JSON.stringify({ error: 'Заявка не сохранилась' }), { status: 502 });
     }
 
-    notifyLeadInMax({ source: 'форма на сайте', text }).then((notification) => {
-      if (!notification.ok) console.error('MAX lead notification error:', notification.error);
-    });
+    const notification = await notifyLeadInMax({ source: 'форма на сайте', text });
+    if ('skipped' in notification && notification.skipped) {
+      console.warn('MAX lead notification skipped:', notification.reason);
+    } else if (!notification.ok) {
+      console.error('MAX lead notification error:', notification.status || '', notification.recipient || '', notification.error);
+    } else {
+      console.info('MAX lead notification sent:', notification.recipient);
+    }
 
     return new Response(JSON.stringify({ ok: true }), { status: 200 });
   } catch (error) {
