@@ -1,4 +1,4 @@
-import { getEnv } from './env';
+﻿import { getEnv } from './env';
 
 type MaxNotifyResult =
   | { ok: true; skipped?: false; recipient: string }
@@ -8,22 +8,16 @@ type MaxNotifyResult =
 const MAX_API_URL = 'https://platform-api.max.ru/messages';
 const MAX_TEXT_LIMIT = 4000;
 
-const trimMessage = (value: string) =>
+const trimMessage = (value) =>
   value.length <= MAX_TEXT_LIMIT ? value : `${value.slice(0, MAX_TEXT_LIMIT - 3)}...`;
 
-const cleanRecipient = (value: string | undefined) => {
+const cleanRecipient = (value) => {
   const trimmed = value?.trim();
   if (!trimmed || trimmed === '0') return undefined;
   return trimmed;
 };
 
-export const notifyLeadInMax = async ({
-  source,
-  text,
-}: {
-  source: string;
-  text: string;
-}): Promise<MaxNotifyResult> => {
+export const notifyLeadInMax = async ({ source, text }) => {
   const token = getEnv('MAX_BOT_TOKEN')?.trim();
   const chatId = cleanRecipient(getEnv('MAX_CHAT_ID'));
   const userId = cleanRecipient(getEnv('MAX_USER_ID'));
@@ -33,18 +27,18 @@ export const notifyLeadInMax = async ({
   }
 
   if (!chatId && !userId) {
-    return { ok: true, skipped: true, reason: 'MAX_USER_ID or MAX_CHAT_ID is missing' };
+    return { ok: true, skipped: true, reason: 'MAX_CHAT_ID or MAX_USER_ID is missing' };
   }
 
   const url = new URL(MAX_API_URL);
   let recipient = '';
 
-  if (userId) {
-    url.searchParams.set('user_id', userId);
-    recipient = `user_id:${userId}`;
-  } else if (chatId) {
+  if (chatId) {
     url.searchParams.set('chat_id', chatId);
     recipient = `chat_id:${chatId}`;
+  } else if (userId) {
+    url.searchParams.set('user_id', userId);
+    recipient = `user_id:${userId}`;
   }
 
   try {
@@ -61,20 +55,11 @@ export const notifyLeadInMax = async ({
     });
 
     if (!response.ok) {
-      return {
-        ok: false,
-        status: response.status,
-        recipient,
-        error: await response.text(),
-      };
+      return { ok: false, status: response.status, recipient, error: await response.text() };
     }
 
     return { ok: true, recipient };
   } catch (error) {
-    return {
-      ok: false,
-      recipient,
-      error: error instanceof Error ? error.message : 'MAX notification error',
-    };
+    return { ok: false, recipient, error: error instanceof Error ? error.message : 'MAX notification error' };
   }
 };
