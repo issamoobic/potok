@@ -264,6 +264,7 @@ body {
   padding: 0.56rem 0.9rem 0.56rem 0.62rem;
   font-size: 0.84rem;
   box-shadow: 0 16px 38px rgba(75, 0, 130, 0.28), 0 0 30px rgba(255, 106, 0, 0.2);
+  min-width: 6.15rem;
 }
 
 .telegram-button--nav .telegram-button__icon {
@@ -341,6 +342,7 @@ body {
     radial-gradient(circle at 85% 10%, rgba(255, 174, 84, 0.5), transparent 7rem);
   box-shadow: 0 16px 38px rgba(75, 0, 130, 0.28), 0 0 30px rgba(255, 106, 0, 0.2);
   font-size: 0.84rem;
+  min-width: 6.15rem;
 }
 
 .max-button--nav .max-button__icon {
