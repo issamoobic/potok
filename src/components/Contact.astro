@@ -12,6 +12,7 @@
       </p>
       <div class="text-sm text-ink/70 space-y-2">
         <div>Телефон: +7 920 355-57-87</div>
+        <div>Email: <a href="mailto:kropotsystems@yandex.ru" class="underline text-ink">kropotsystems@yandex.ru</a></div>
       </div>
       <div class="contact-messenger-buttons">
         <a
@@ -41,8 +42,8 @@
         <input name="name" required class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition" />
       </div>
       <div>
-        <label class="text-sm text-ink/68">Телефон или email</label>
-        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="+7 920 355-57-87 или name@company.ru" class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition placeholder:text-ink/45" />
+        <label class="text-sm text-ink/68">Телефон, Telegram или MAX</label>
+        <input name="contact" required autocomplete="tel" inputmode="text" placeholder="+7 920 355-57-87, @username или max.ru/u/..." class="w-full mt-1 px-4 py-3 bg-white/12 border border-ink/20 rounded-lg focus:outline-none focus:border-ink transition placeholder:text-ink/45" />
       </div>
       <div>
         <label class="text-sm text-ink/68">Задача</label>
@@ -75,13 +76,14 @@
   const status = document.getElementById('form-status')!;
   const validateContact = (value: string) => {
     const contact = value.trim();
-    const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
     const digits = contact.replace(/\D/g, '');
     const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
     const sameDigits = /^(\d)\1+$/.test(digits);
     const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+    const telegram = /^@[a-zA-Z0-9_]{5,32}$/.test(contact) || /^(https?:\/\/)?(t\.me|telegram\.me)\/[a-zA-Z0-9_]{5,32}\/?$/i.test(contact);
+    const max = /^(https?:\/\/)?max\.ru\/u\/[a-zA-Z0-9_-]{8,}(?:[/?#].*)?$/i.test(contact);
 
-    return phone || email.test(contact);
+    return phone || telegram || max;
   };
   const contactFallback = `
     <div class="space-y-3">
@@ -107,7 +109,7 @@
     const contact = String(data.contact || '');
 
     if (!validateContact(contact)) {
-      status.textContent = 'Укажите корректный телефон или email.';
+      status.textContent = 'Укажите корректный телефон, Telegram или MAX.';
       return;
     }
 

@@ -57,7 +57,7 @@
           Оставьте контакты, мы свяжемся и покажем как увеличить эффективность, оптимизировать затраты именно в ваших процессах с помощью автоматизации.
         </p>
         <input name="name" required placeholder="Имя" class="widget-input" />
-        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="+7 920 355-57-87 или name@company.ru" class="widget-input" />
+        <input name="contact" required autocomplete="tel" inputmode="text" placeholder="+7 920 355-57-87, @username или max.ru/u/..." class="widget-input" />
         <textarea name="comment" rows="3" placeholder="Что нужно автоматизировать или показать на демо" class="widget-input resize-none"></textarea>
         <label class="widget-consent">
           <input type="checkbox" name="consent_pd" required />
@@ -163,13 +163,14 @@
     const status = document.getElementById('widget-status');
     const validateContact = (value) => {
       const contact = value.trim();
-      const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
       const digits = contact.replace(/\D/g, '');
       const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
       const sameDigits = /^(\d)\1+$/.test(digits);
       const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+      const telegram = /^@[a-zA-Z0-9_]{5,32}$/.test(contact) || /^(https?:\/\/)?(t\.me|telegram\.me)\/[a-zA-Z0-9_]{5,32}\/?$/i.test(contact);
+      const max = /^(https?:\/\/)?max\.ru\/u\/[a-zA-Z0-9_-]{8,}(?:[/?#].*)?$/i.test(contact);
 
-      return phone || email.test(contact);
+      return phone || telegram || max;
     };
     const contactFallback = `
       <div class="space-y-3">
@@ -235,7 +236,7 @@
       const formData = Object.fromEntries(new FormData(widgetForm));
 
       if (!validateContact(String(formData.contact || ''))) {
-        status.textContent = 'Укажите корректный телефон или email.';
+        status.textContent = 'Укажите корректный телефон, Telegram или MAX.';
         return;
       }
 

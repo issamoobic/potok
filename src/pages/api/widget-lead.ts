@@ -23,18 +23,20 @@ const goalLabels: Record<string, string> = {
 
 const validateContact = (value: string) => {
   const contact = value.trim();
-  const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
   const digits = contact.replace(/\D/g, '');
   const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
   const sameDigits = /^(\d)\1+$/.test(digits);
   const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
+  const telegram = /^@[a-zA-Z0-9_]{5,32}$/.test(contact) || /^(https?:\/\/)?(t\.me|telegram\.me)\/[a-zA-Z0-9_]{5,32}\/?$/i.test(contact);
+  const max = /^(https?:\/\/)?max\.ru\/u\/[a-zA-Z0-9_-]{8,}(?:[/?#].*)?$/i.test(contact);
 
-  if (email.test(contact)) return { ok: true, type: 'email' };
   if (phone) return { ok: true, type: 'phone' };
+  if (telegram) return { ok: true, type: 'telegram' };
+  if (max) return { ok: true, type: 'max' };
 
   return {
     ok: false,
-    error: 'Укажите корректный телефон или email',
+    error: 'Укажите корректный телефон, Telegram или MAX',
   };
 };
 

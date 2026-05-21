@@ -106,12 +106,12 @@ body {
   color: var(--ks-purple);
 }
 
-#site-nav.logo-on-warm .nav-contact-button[href="#contact"] {
+#site-nav.logo-on-warm .nav-contact-button[href="/#contact"] {
   border-color: rgba(75, 0, 130, 0.48);
   color: #fff4eb;
 }
 
-#site-nav.logo-on-warm .nav-contact-button[href="#contact"]:hover {
+#site-nav.logo-on-warm .nav-contact-button[href="/#contact"]:hover {
   background: var(--ks-purple);
   color: #fff4eb;
 }
