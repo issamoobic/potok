@@ -2,7 +2,7 @@
 ---
 <div id="ai-widget" class="fixed bottom-5 right-5 sm:bottom-6 sm:right-6 z-50">
   <button id="ai-nudge" class="hidden max-sm:!hidden absolute bottom-20 right-0 w-[340px] rounded-2xl border border-white/14 bg-[#150823]/95 p-5 text-left text-sm text-white shadow-2xl backdrop-blur-xl hover:border-paper/45 transition">
-    <div class="text-lg font-semibold leading-tight text-paper">Показать демо ИИ-агентов?</div>
+    <div class="text-lg font-semibold leading-tight text-paper">Показать как это будет работать именно у вас ?</div>
     <div class="mt-2 text-sm leading-relaxed text-white/68">
       Подскажем, где ИИ сэкономит время, и покажем сценарий под ваш бизнес.
     </div>
@@ -54,25 +54,25 @@
 
       <form id="widget-form" class="hidden space-y-3">
         <p class="text-sm leading-relaxed">
-          Отлично. Расскажите, что хотите автоматизировать или посмотреть в работе, и оставьте контакт.
+          Оставьте контакты, мы свяжемся и покажем как увеличить эффективность, оптимизировать затраты именно в ваших процессах с помощью автоматизации.
         </p>
         <input name="name" required placeholder="Имя" class="widget-input" />
-        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="Телефон, email или Telegram" class="widget-input" />
+        <input name="contact" required autocomplete="email tel" inputmode="email" placeholder="+7 920 355-57-87 или name@company.ru" class="widget-input" />
         <textarea name="comment" rows="3" placeholder="Что нужно автоматизировать или показать на демо" class="widget-input resize-none"></textarea>
         <label class="widget-consent">
           <input type="checkbox" name="consent_pd" required />
           <span>
-            Согласен на обработку персональных данных
-            <a href="/privacy">по политике</a>.
+            Я соглашаюсь с обработкой персональных данных в соответствии с
+            <a href="/privacy">Политикой обработки персональных данных</a>.
           </span>
-        </label>
-        <label class="widget-consent">
-          <input type="checkbox" name="consent_ad" />
-          <span>Согласен получать предложения и материалы.</span>
         </label>
         <button class="w-full bg-paper text-ink rounded-lg px-4 py-3 text-sm font-semibold hover:opacity-90 transition">
           Отправить заявку
         </button>
+        <p class="text-xs leading-relaxed text-white/62">
+          Нажимая кнопку отправки, вы соглашаетесь с обработкой персональных данных в соответствии с
+          <a href="/privacy" class="text-paper underline">Политикой обработки персональных данных</a>.
+        </p>
         <div id="widget-status" class="min-h-5 text-xs opacity-80"></div>
       </form>
 
@@ -164,19 +164,17 @@
     const validateContact = (value) => {
       const contact = value.trim();
       const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-      const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
       const digits = contact.replace(/\D/g, '');
       const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
       const sameDigits = /^(\d)\1+$/.test(digits);
       const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
 
-      return email.test(contact) || phone || telegram;
+      return phone || email.test(contact);
     };
     const contactFallback = `
       <div class="space-y-3">
         <div class="text-xs leading-relaxed text-white/78">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
         <div class="grid grid-cols-1 gap-2">
-          <a href="mailto:kropotsystems@yandex.ru" class="widget-contact-link">Email</a>
           <a href="tel:+79203555787" class="widget-contact-link">Позвонить</a>
           <a href="https://max.ru/u/f9LHodD0cOJgMMvqd7pnQ7s9KaM0pJdFSTkgc0GOCz7lSq6niYlvMFi5D6s" target="_blank" rel="noopener noreferrer" class="widget-max-link">
             <img src="/max-logo.png" alt="" class="widget-max-link__icon" loading="lazy" />
@@ -237,7 +235,7 @@
       const formData = Object.fromEntries(new FormData(widgetForm));
 
       if (!validateContact(String(formData.contact || ''))) {
-        status.textContent = 'Укажите корректный телефон, email или Telegram.';
+        status.textContent = 'Укажите корректный телефон или email.';
         return;
       }
 

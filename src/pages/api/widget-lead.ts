@@ -24,7 +24,6 @@ const goalLabels: Record<string, string> = {
 const validateContact = (value: string) => {
   const contact = value.trim();
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-  const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
   const digits = contact.replace(/\D/g, '');
   const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
   const sameDigits = /^(\d)\1+$/.test(digits);
@@ -32,11 +31,10 @@ const validateContact = (value: string) => {
 
   if (email.test(contact)) return { ok: true, type: 'email' };
   if (phone) return { ok: true, type: 'phone' };
-  if (telegram.test(contact)) return { ok: true, type: 'telegram' };
 
   return {
     ok: false,
-    error: 'Укажите корректный телефон, email или Telegram',
+    error: 'Укажите корректный телефон или email',
   };
 };
 
@@ -49,8 +47,8 @@ export const POST: APIRoute = async ({ request }) => {
     const product = String(data.product || 'demo');
     const goal = String(data.goal || 'integration');
 
-    if (!name || !contact) {
-      return new Response(JSON.stringify({ error: 'Укажите имя и контакт' }), { status: 400 });
+    if (!name || !contact || !data.consent_pd) {
+      return new Response(JSON.stringify({ error: 'Укажите имя, контакт и согласие на обработку данных' }), { status: 400 });
     }
 
     const contactValidation = validateContact(contact);

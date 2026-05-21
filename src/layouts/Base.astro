@@ -16,7 +16,36 @@ const { title = 'KROPOT SYSTEMS — ИИ-агенты для бизнеса', de
   </head>
   <body class="grain">
     <slot />
+    <div
+      id="cookie-banner"
+      class="fixed inset-x-4 bottom-4 z-[60] hidden rounded-lg border border-white/12 bg-[#150823]/95 p-4 text-sm text-white shadow-2xl backdrop-blur-xl sm:left-auto sm:max-w-xl"
+    >
+      <div class="flex flex-col gap-4 sm:flex-row sm:items-start">
+        <p class="leading-relaxed text-white/78">
+          Сайт использует cookie-файлы и сервис веб-аналитики Яндекс.Метрика для обеспечения корректной работы сайта, анализа посещаемости и улучшения пользовательского опыта. Продолжая использование сайта, вы соглашаетесь с использованием cookie-файлов.
+        </p>
+        <button
+          id="cookie-accept"
+          class="shrink-0 rounded-lg bg-paper px-4 py-2 text-sm font-semibold text-ink transition hover:opacity-90"
+          type="button"
+        >
+          Принять
+        </button>
+      </div>
+    </div>
     <script>
+      const cookieBanner = document.getElementById('cookie-banner');
+      const cookieAccept = document.getElementById('cookie-accept');
+      const cookieStorageKey = 'kropot_cookie_accepted';
+
+      if (cookieBanner && cookieAccept && localStorage.getItem(cookieStorageKey) !== 'yes') {
+        cookieBanner.classList.remove('hidden');
+        cookieAccept.addEventListener('click', () => {
+          localStorage.setItem(cookieStorageKey, 'yes');
+          cookieBanner.classList.add('hidden');
+        });
+      }
+
       const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       const scrollToTarget = (target) => {

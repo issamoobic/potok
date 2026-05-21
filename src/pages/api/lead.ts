@@ -7,7 +7,6 @@ export const prerender = false;
 const validateContact = (value: string) => {
   const contact = value.trim();
   const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-  const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
   const digits = contact.replace(/\D/g, '');
   const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
   const sameDigits = /^(\d)\1+$/.test(digits);
@@ -15,11 +14,10 @@ const validateContact = (value: string) => {
 
   if (email.test(contact)) return { ok: true, type: 'email' };
   if (phone) return { ok: true, type: 'phone' };
-  if (telegram.test(contact)) return { ok: true, type: 'telegram' };
 
   return {
     ok: false,
-    error: 'Укажите корректный телефон, email или Telegram',
+    error: 'Укажите корректный телефон или email',
   };
 };
 
@@ -46,7 +44,6 @@ export const POST: APIRoute = async ({ request }) => {
       `Контакт: ${contact}`,
       `Тип контакта: ${contactValidation.type}`,
       `Задача: ${task || '—'}`,
-      `Согласие на рекламу: ${data.consent_ad ? 'да' : 'нет'}`,
     ].join('\n');
 
     const subject = `Новая заявка KROPOT SYSTEMS: ${name}`;
@@ -54,7 +51,7 @@ export const POST: APIRoute = async ({ request }) => {
       source: 'contact-form',
       subject,
       text,
-      payload: { name, contact, task, consentAd: Boolean(data.consent_ad) },
+      payload: { name, contact, task },
     });
     if (!stored.ok) {
       console.error('Lead store error:', stored.error);

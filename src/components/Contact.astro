@@ -11,7 +11,6 @@
         Разберём вашу воронку, подберём агента и покажем, как встроить автоматизацию в текущие процессы.
       </p>
       <div class="text-sm text-ink/70 space-y-2">
-        <div>Email: kropotsystems@yandex.ru</div>
         <div>Телефон: +7 920 355-57-87</div>
       </div>
       <div class="contact-messenger-buttons">
@@ -53,21 +52,18 @@
       <label class="flex gap-3 items-start text-sm cursor-pointer">
         <input type="checkbox" name="consent_pd" required class="mt-1 flex-shrink-0" />
         <span class="text-ink/70">
-          Согласен на обработку персональных данных согласно
-          <a href="/privacy" class="underline text-ink">Политике конфиденциальности</a> (152-ФЗ).
-        </span>
-      </label>
-
-      <label class="flex gap-3 items-start text-sm cursor-pointer">
-        <input type="checkbox" name="consent_ad" class="mt-1 flex-shrink-0" />
-        <span class="text-ink/70">
-          Согласен получать рекламные материалы и предложения (38-ФЗ).
+          Я соглашаюсь с обработкой персональных данных в соответствии с
+          <a href="/privacy" class="underline text-ink">Политикой обработки персональных данных</a>.
         </span>
       </label>
 
       <button type="submit" class="w-full py-3.5 cta-glow text-white rounded-lg font-semibold transition">
         Отправить заявку
       </button>
+      <p class="text-xs leading-relaxed text-ink/60">
+        Нажимая кнопку отправки, вы соглашаетесь с обработкой персональных данных в соответствии с
+        <a href="/privacy" class="underline text-ink">Политикой обработки персональных данных</a>.
+      </p>
       <div id="form-status" class="text-sm text-center text-ink/70"></div>
     </form>
   </div>
@@ -80,19 +76,17 @@
   const validateContact = (value: string) => {
     const contact = value.trim();
     const email = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
-    const telegram = /^@?[a-zA-Z][a-zA-Z0-9_]{4,31}$/;
     const digits = contact.replace(/\D/g, '');
     const hasPhonePrefix = /^[+\d\s().-]+$/.test(contact);
     const sameDigits = /^(\d)\1+$/.test(digits);
     const phone = hasPhonePrefix && digits.length >= 10 && digits.length <= 15 && !sameDigits;
 
-    return email.test(contact) || phone || telegram;
+    return phone || email.test(contact);
   };
   const contactFallback = `
     <div class="space-y-3">
       <div class="font-semibold text-ink">Не удалось оставить заявку, пожалуйста напишите нам удобным для вас способом.</div>
       <div class="flex flex-wrap justify-center gap-2">
-        <a href="mailto:kropotsystems@yandex.ru" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Email</a>
         <a href="tel:+79203555787" class="inline-flex min-h-10 items-center rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">Позвонить</a>
         <a href="https://t.me/sergkropai" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center gap-2 rounded-full border border-ink/30 px-4 text-sm font-semibold text-ink">
           <img src="/telegram-logo.png" alt="" class="h-5 w-5 rounded-md" loading="lazy" />
@@ -113,7 +107,7 @@
     const contact = String(data.contact || '');
 
     if (!validateContact(contact)) {
-      status.textContent = 'Укажите корректный телефон, email или Telegram.';
+      status.textContent = 'Укажите корректный телефон или email.';
       return;
     }
 
